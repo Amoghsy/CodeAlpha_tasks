@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibesta • Feed</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="bg-zinc-50 min-h-screen pb-16 sm:pb-8">
+
+  <!-- Top Navbar Component Injection -->
+  <div id="navbar-container"></div>
+
+  <!-- Main Content Layout -->
+  <main class="max-w-5xl mx-auto px-2 sm:px-6 pt-6">
+    <div class="flex flex-col lg:flex-row gap-8 justify-center items-start">
+      
+      <!-- Center Feed Column -->
+      <section class="w-full max-w-xl mx-auto lg:mx-0 flex-1">
+        
+        <!-- Stories Carousel Bar -->
+        <div class="bg-white border border-zinc-200/90 rounded-2xl p-4 mb-6 shadow-sm overflow-hidden">
+          <div id="stories-container" class="flex items-center gap-4 overflow-x-auto pb-1 scrollbar-none">
+            <!-- Rendered by feed.js -->
+          </div>
+        </div>
+
+        <!-- Post Cards Stream -->
+        <div id="posts-container" class="space-y-6">
+          <!-- Rendered by feed.js -->
+        </div>
+
+        <!-- Feed Pagination / Load More Button -->
+        <div class="text-center py-6">
+          <button 
+            id="load-more-btn" 
+            class="px-5 py-2.5 bg-white hover:bg-zinc-100 text-zinc-700 text-xs font-bold rounded-xl border border-zinc-200 shadow-sm transition-all"
+          >
+            Refresh Feed ✨
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Desktop Sidebar (Sticky Suggestions & Profile) -->
+      <aside class="hidden lg:block w-80 sticky top-24">
+        <div id="feed-sidebar" class="bg-transparent p-2">
+          <!-- Rendered by feed.js -->
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar Injection -->
+  <div id="mobile-bottom-bar"></div>
+
+  <!-- Scripts -->
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/navbar.js"></script>
+  <script src="../js/feed.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create New Post • Vibesta</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="bg-zinc-50 min-h-screen pb-16 sm:pb-8">
+
+  <!-- Top Navbar Component Injection -->
+  <div id="navbar-container"></div>
+
+  <!-- Create Post Container -->
+  <main class="max-w-2xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
+    
+    <div class="bg-white border border-zinc-200/90 rounded-2xl overflow-hidden shadow-sm">
+      
+      <!-- Card Header -->
+      <div class="px-6 py-4 border-b border-zinc-200 flex items-center justify-between">
+        <h2 class="text-base font-bold text-zinc-900">Create new post</h2>
+        <a href="index.html" class="text-xs text-zinc-400 hover:text-zinc-700">Cancel</a>
+      </div>
+
+      <!-- Creation Form -->
+      <form id="create-post-page-form" class="p-6 space-y-6">
+        
+        <!-- Image Dropzone -->
+        <div 
+          id="page-dropzone" 
+          class="border-2 border-dashed border-zinc-300 hover:border-zinc-400 rounded-2xl p-8 text-center cursor-pointer transition-colors bg-zinc-50/50 relative overflow-hidden"
+        >
+          <input type="file" id="page-image-input" accept="image/*" class="hidden">
+          
+          <div id="page-dropzone-prompt" class="space-y-3 py-6">
+            <div class="w-16 h-16 mx-auto rounded-full bg-pink-50 text-pink-600 flex items-center justify-center">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+            <div>
+              <p class="text-sm font-bold text-zinc-800">Drag and drop photos here</p>
+              <p class="text-xs text-zinc-400 mt-1">or click to browse from your device</p>
+            </div>
+          </div>
+
+          <!-- Image Preview Area -->
+          <div id="page-preview-container" class="hidden relative rounded-xl overflow-hidden bg-black flex items-center justify-center">
+            <img id="page-image-preview" src="" alt="Preview" class="w-full h-full object-cover aspect-square max-h-[440px]">
+            <button 
+              type="button" 
+              id="page-remove-btn" 
+              class="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black/80 text-white rounded-full transition-colors"
+              title="Remove image"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Aspect Ratio & Preset Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-1">
+          <!-- Ratio toggles -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-zinc-500">Ratio:</span>
+            <button type="button" class="aspect-toggle-btn text-xs px-3 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 ring-2 ring-pink-500 font-bold transition-all" data-aspect="square">1:1 Square</button>
+            <button type="button" class="aspect-toggle-btn text-xs px-3 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-800 transition-all" data-aspect="portrait">4:5 Portrait</button>
+          </div>
+
+          <!-- Sample quick pick -->
+          <div class="flex items-center gap-2 overflow-x-auto">
+            <span class="text-xs font-semibold text-zinc-500">Sample:</span>
+            <button type="button" class="create-sample-btn text-xs px-2.5 py-1 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-700" data-url="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80">🏝️ Beach</button>
+            <button type="button" class="create-sample-btn text-xs px-2.5 py-1 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-700" data-url="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80">💻 Tech</button>
+            <button type="button" class="create-sample-btn text-xs px-2.5 py-1 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-700" data-url="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80">🍜 Food</button>
+          </div>
+        </div>
+
+        <!-- Caption Field -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label for="page-caption-input" class="text-xs font-bold text-zinc-700">Write Caption</label>
+            <span id="char-counter" class="text-[11px] text-zinc-400">0 / 2,200</span>
+          </div>
+          <textarea 
+            id="page-caption-input" 
+            rows="4" 
+            maxlength="2200"
+            placeholder="Write an engaging caption... Mention friends with @ or add tags" 
+            class="w-full p-3.5 bg-zinc-50 focus:bg-white text-xs sm:text-sm text-zinc-900 rounded-xl border border-zinc-200 focus:border-zinc-400 focus:outline-none resize-none transition-colors"
+          ></textarea>
+        </div>
+
+        <!-- Quick Hashtags -->
+        <div>
+          <span class="text-xs text-zinc-500 font-semibold mb-2 block">Quick tags:</span>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="tag-pill text-xs px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors" data-tag="#vibesta">#vibesta</button>
+            <button type="button" class="tag-pill text-xs px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors" data-tag="#photography">#photography</button>
+            <button type="button" class="tag-pill text-xs px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors" data-tag="#travel">#travel</button>
+            <button type="button" class="tag-pill text-xs px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors" data-tag="#vibes">#vibes</button>
+            <button type="button" class="tag-pill text-xs px-2.5 py-1 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors" data-tag="#codealpha">#codealpha</button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          id="page-submit-btn" 
+          class="w-full py-3 rounded-xl font-semibold text-sm text-white brand-gradient-bg hover:opacity-95 active:scale-[0.99] transition-all shadow-md shadow-pink-500/20 disabled:opacity-50"
+        >
+          Share Post
+        </button>
+
+      </form>
+    </div>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar Injection -->
+  <div id="mobile-bottom-bar"></div>
+
+  <!-- Scripts -->
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/navbar.js"></script>
+  <script src="../js/upload.js"></script>
+</body>
+</html>

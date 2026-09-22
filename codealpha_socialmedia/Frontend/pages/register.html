@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up • Vibesta</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="bg-zinc-50 min-h-screen flex flex-col justify-between items-center px-4 py-8">
+  
+  <main class="w-full max-w-sm my-auto space-y-3">
+    <!-- Registration Card -->
+    <div class="bg-white border border-zinc-200/90 rounded-2xl p-8 shadow-sm">
+      
+      <!-- Brand Header -->
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl brand-gradient-bg mb-3 p-1 shadow-md shadow-pink-500/20">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="2" y="2" width="20" height="20" rx="6" stroke-width="2"/>
+            <circle cx="12" cy="12" r="4" stroke-width="2"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <h1 class="text-3xl font-extrabold tracking-tight brand-gradient-text">Vibesta</h1>
+        <p class="text-xs text-zinc-500 mt-1 font-medium">Sign up to see photos and videos from your friends.</p>
+      </div>
+
+      <!-- Avatar Preview Bubble -->
+      <div class="flex flex-col items-center mb-4">
+        <div class="p-0.5 rounded-full story-ring-gradient mb-1">
+          <img 
+            id="reg-avatar-preview" 
+            src="https://api.dicebear.com/7.x/avataaars/svg?seed=vibesta" 
+            alt="Avatar preview" 
+            class="w-16 h-16 rounded-full object-cover bg-zinc-100 border-2 border-white"
+          />
+        </div>
+        <span class="text-[10px] text-zinc-400">Avatar updates as you type username</span>
+      </div>
+
+      <!-- Inline Error Banner -->
+      <div id="auth-error" class="hidden mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-600 font-medium"></div>
+
+      <!-- Signup Form -->
+      <form id="register-form" class="space-y-3">
+        <div>
+          <input 
+            type="email" 
+            id="reg-email" 
+            placeholder="Email address" 
+            required
+            class="w-full px-3.5 py-2.5 bg-zinc-50 focus:bg-white text-xs text-zinc-900 rounded-xl border border-zinc-200 focus:border-zinc-400 focus:outline-none transition-colors"
+          />
+        </div>
+
+        <div>
+          <input 
+            type="text" 
+            id="reg-fullname" 
+            placeholder="Full Name" 
+            required
+            class="w-full px-3.5 py-2.5 bg-zinc-50 focus:bg-white text-xs text-zinc-900 rounded-xl border border-zinc-200 focus:border-zinc-400 focus:outline-none transition-colors"
+          />
+        </div>
+
+        <div>
+          <input 
+            type="text" 
+            id="reg-username" 
+            placeholder="Username" 
+            required
+            class="w-full px-3.5 py-2.5 bg-zinc-50 focus:bg-white text-xs text-zinc-900 rounded-xl border border-zinc-200 focus:border-zinc-400 focus:outline-none transition-colors"
+            oninput="document.getElementById('reg-avatar-preview').src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(this.value.trim() || 'vibesta');"
+          />
+        </div>
+
+        <div>
+          <input 
+            type="password" 
+            id="reg-password" 
+            placeholder="Password (min. 6 characters)" 
+            required
+            minlength="6"
+            class="w-full px-3.5 py-2.5 bg-zinc-50 focus:bg-white text-xs text-zinc-900 rounded-xl border border-zinc-200 focus:border-zinc-400 focus:outline-none transition-colors"
+          />
+        </div>
+
+        <p class="text-[10px] text-zinc-400 text-center leading-normal px-2">
+          By signing up, you agree to our Terms, Privacy Policy and Cookies Policy.
+        </p>
+
+        <button 
+          type="submit" 
+          id="register-submit-btn" 
+          class="w-full py-2.5 rounded-xl font-semibold text-xs text-white brand-gradient-bg hover:opacity-95 active:scale-[0.99] transition-all shadow-md shadow-pink-500/20 disabled:opacity-50"
+        >
+          Sign Up
+        </button>
+      </form>
+    </div>
+
+    <!-- Log In Redirect Card -->
+    <div class="bg-white border border-zinc-200/90 rounded-2xl p-5 text-center text-xs text-zinc-600 shadow-sm">
+      Have an account? 
+      <a href="login.html" class="font-bold text-blue-600 hover:text-blue-800 ml-1">Log in</a>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-[11px] text-zinc-400 py-4">
+    <p>© 2026 Vibesta Social • Built with CodeAlpha</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+</body>
+</html>
