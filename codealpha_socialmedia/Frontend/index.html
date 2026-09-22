@@ -6,12 +6,10 @@
   <title>Vibesta</title>
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <script>
-    const token = localStorage.getItem('vibesta_token');
-    if (token) {
-      window.location.replace('pages/index.html');
-    } else {
-      window.location.replace('pages/login.html');
-    }
+    // Always present the login page first when opening index.html
+    localStorage.removeItem('vibesta_token');
+    localStorage.removeItem('vibesta_user');
+    window.location.replace('pages/login.html');
   </script>
 </head>
 <body class="bg-zinc-50 flex items-center justify-center min-h-screen">

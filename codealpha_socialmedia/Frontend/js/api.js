@@ -29,10 +29,6 @@ class ApiClient {
           if (data.stories && !hasStories) {
             localStorage.setItem(CONFIG.MOCK_STORIES_KEY, JSON.stringify(data.stories));
           }
-          if (data.users && data.users.length > 0 && !localStorage.getItem(CONFIG.USER_KEY)) {
-            localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.users[0]));
-            localStorage.setItem(CONFIG.TOKEN_KEY, 'mock-jwt-token-vibesta-session');
-          }
         }
       } catch (err) {
         console.warn('Could not fetch mock-data.json directly:', err);
@@ -371,6 +367,9 @@ class ApiClient {
     // 8. Auth Login: /auth/login
     if (cleanEndpoint === '/auth/login' && method === 'POST') {
       const body = JSON.parse(options.body || '{}');
+      if (!body.password || body.password.trim() === '') {
+        throw new Error('Password is required');
+      }
       const users = getStoredUsers();
       const user = users.find(u => 
         (u.email && u.email.toLowerCase() === body.identifier?.toLowerCase()) || 

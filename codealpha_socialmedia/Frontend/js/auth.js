@@ -52,7 +52,6 @@ const Auth = {
     // 1. Login Form Handler
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
-      this.redirectIfAuthenticated();
       loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const identifierInput = document.getElementById('identifier');
