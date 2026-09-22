@@ -8,6 +8,7 @@ const Feed = {
 
   async init() {
     Auth.requireAuth();
+    await api.ensureMockDataLoaded();
     this.renderStories();
     this.renderSidebar();
     await this.loadPosts();

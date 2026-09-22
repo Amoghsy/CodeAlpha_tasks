@@ -4,6 +4,48 @@
 class ApiClient {
   constructor() {
     this.baseUrl = CONFIG.API_BASE_URL;
+    this.mockDataLoaded = false;
+    this.ensureMockDataLoaded();
+  }
+
+  // Fetch mock data from JSON file if not already populated in storage
+  async ensureMockDataLoaded() {
+    if (this.mockDataLoaded && localStorage.getItem(CONFIG.MOCK_USERS_KEY) && localStorage.getItem(CONFIG.MOCK_POSTS_KEY)) {
+      return;
+    }
+    const hasUsers = !!localStorage.getItem(CONFIG.MOCK_USERS_KEY);
+    const hasPosts = !!localStorage.getItem(CONFIG.MOCK_POSTS_KEY);
+    
+    if (!hasUsers || !hasPosts) {
+      try {
+        const url = CONFIG.getMockDataUrl();
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.users && !hasUsers) {
+            localStorage.setItem(CONFIG.MOCK_USERS_KEY, JSON.stringify(data.users));
+          }
+          if (data.posts && !hasPosts) {
+            localStorage.setItem(CONFIG.MOCK_POSTS_KEY, JSON.stringify(data.posts));
+          }
+          if (data.users && data.users.length > 0 && !localStorage.getItem(CONFIG.USER_KEY)) {
+            localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.users[0]));
+            localStorage.setItem(CONFIG.TOKEN_KEY, 'mock-jwt-token-vibesta-session');
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch mock-data.json directly:', err);
+      }
+    }
+    this.mockDataLoaded = true;
+  }
+
+  getStoredUsers() {
+    return JSON.parse(localStorage.getItem(CONFIG.MOCK_USERS_KEY) || '[]');
+  }
+
+  getStoredPosts() {
+    return JSON.parse(localStorage.getItem(CONFIG.MOCK_POSTS_KEY) || '[]');
   }
 
   getToken() {
@@ -133,6 +175,7 @@ class ApiClient {
 
   // Mock Fallback Handler - Ensures complete zero-backend offline usability while backend is being stood up
   async handleMockFallback(endpoint, options) {
+    await this.ensureMockDataLoaded();
     const method = (options.method || 'GET').toUpperCase();
     const cleanEndpoint = endpoint.split('?')[0];
 

@@ -336,7 +336,9 @@ const Navbar = {
           return;
         }
 
-        const users = JSON.parse(localStorage.getItem(CONFIG.MOCK_USERS_KEY) || '[]');
+        const users = (typeof api !== 'undefined' && api.getStoredUsers) 
+          ? api.getStoredUsers() 
+          : JSON.parse(localStorage.getItem(CONFIG.MOCK_USERS_KEY) || '[]');
         const matches = users.filter(u => 
           u.username.toLowerCase().includes(query) || 
           (u.name && u.name.toLowerCase().includes(query))

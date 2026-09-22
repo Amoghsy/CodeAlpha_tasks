@@ -8,6 +8,7 @@ const Profile = {
 
   async init() {
     Auth.requireAuth();
+    await api.ensureMockDataLoaded();
     const urlParams = new URLSearchParams(window.location.search);
     const currentUser = Auth.getUser();
     let targetUsername = urlParams.get('username');
