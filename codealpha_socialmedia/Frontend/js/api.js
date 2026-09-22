@@ -10,13 +10,11 @@ class ApiClient {
 
   // Fetch mock data from JSON file if not already populated in storage
   async ensureMockDataLoaded() {
-    if (this.mockDataLoaded && localStorage.getItem(CONFIG.MOCK_USERS_KEY) && localStorage.getItem(CONFIG.MOCK_POSTS_KEY)) {
-      return;
-    }
     const hasUsers = !!localStorage.getItem(CONFIG.MOCK_USERS_KEY);
     const hasPosts = !!localStorage.getItem(CONFIG.MOCK_POSTS_KEY);
+    const hasStories = !!localStorage.getItem(CONFIG.MOCK_STORIES_KEY);
     
-    if (!hasUsers || !hasPosts) {
+    if (!hasUsers || !hasPosts || !hasStories) {
       try {
         const url = CONFIG.getMockDataUrl();
         const res = await fetch(url);
@@ -27,6 +25,9 @@ class ApiClient {
           }
           if (data.posts && !hasPosts) {
             localStorage.setItem(CONFIG.MOCK_POSTS_KEY, JSON.stringify(data.posts));
+          }
+          if (data.stories && !hasStories) {
+            localStorage.setItem(CONFIG.MOCK_STORIES_KEY, JSON.stringify(data.stories));
           }
           if (data.users && data.users.length > 0 && !localStorage.getItem(CONFIG.USER_KEY)) {
             localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.users[0]));
@@ -46,6 +47,26 @@ class ApiClient {
 
   getStoredPosts() {
     return JSON.parse(localStorage.getItem(CONFIG.MOCK_POSTS_KEY) || '[]');
+  }
+
+  getStoredStories() {
+    return JSON.parse(localStorage.getItem(CONFIG.MOCK_STORIES_KEY) || '[]');
+  }
+
+  saveStoredStories(stories) {
+    localStorage.setItem(CONFIG.MOCK_STORIES_KEY, JSON.stringify(stories));
+  }
+
+  getViewedStories() {
+    return JSON.parse(localStorage.getItem(CONFIG.VIEWED_STORIES_KEY) || '[]');
+  }
+
+  markStoryViewed(userId) {
+    const viewed = this.getViewedStories();
+    if (!viewed.includes(userId)) {
+      viewed.push(userId);
+      localStorage.setItem(CONFIG.VIEWED_STORIES_KEY, JSON.stringify(viewed));
+    }
   }
 
   getToken() {

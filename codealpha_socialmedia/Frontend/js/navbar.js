@@ -21,13 +21,7 @@ const Navbar = {
             
             <!-- Brand Logo -->
             <a href="index.html" class="flex items-center gap-2.5 group">
-              <div class="w-9 h-9 rounded-xl brand-gradient-bg flex items-center justify-center p-0.5 shadow-sm shadow-pink-500/20 group-hover:scale-105 transition-transform">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <rect x="2" y="2" width="20" height="20" rx="6" stroke-width="2"/>
-                  <circle cx="12" cy="12" r="4" stroke-width="2"/>
-                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
-                </svg>
-              </div>
+              <img src="../assets/logo.svg" alt="Vibesta" class="w-9 h-9 rounded-xl shadow-sm shadow-purple-500/20 group-hover:scale-105 transition-transform" />
               <span class="text-2xl font-extrabold tracking-tight brand-gradient-text hidden sm:inline">Vibesta</span>
             </a>
 

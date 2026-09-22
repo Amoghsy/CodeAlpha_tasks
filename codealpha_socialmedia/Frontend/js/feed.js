@@ -19,34 +19,72 @@ const Feed = {
     const storiesContainer = document.getElementById('stories-container');
     if (!storiesContainer) return;
 
-    const users = JSON.parse(localStorage.getItem(CONFIG.MOCK_USERS_KEY) || '[]');
-    const currentUser = Auth.getUser();
+    const stories = (typeof api !== 'undefined' && api.getStoredStories) ? api.getStoredStories() : [];
+    const viewedStories = (typeof api !== 'undefined' && api.getViewedStories) ? api.getViewedStories() : [];
+    const currentUser = Auth.getUser() || {
+      id: 'user_1',
+      username: 'vibesta_creator',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+    };
+
+    const myStory = stories.find(s => s.userId === currentUser.id);
+    const hasMyStory = myStory && myStory.items && myStory.items.length > 0;
+    const isMyStoryViewed = viewedStories.includes(currentUser.id);
 
     let storiesHTML = `
-      <!-- Your Story Add button -->
-      <div class="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer group">
-        <div class="relative p-0.5 rounded-full border border-dashed border-zinc-300 group-hover:border-zinc-400">
-          <img src="${currentUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}" class="w-14 h-14 rounded-full object-cover">
-          <div class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold ring-2 ring-white">+</div>
+      <!-- Your Story Bubble -->
+      <div class="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer group" id="my-story-bubble">
+        <div class="relative p-0.5 rounded-full ${hasMyStory ? (isMyStoryViewed ? 'story-ring-viewed' : 'story-ring-gradient') : 'border border-dashed border-zinc-300'} group-hover:scale-105 transition-transform duration-200">
+          <div class="p-0.5 bg-white rounded-full">
+            <img src="${currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}" class="w-14 h-14 rounded-full object-cover">
+          </div>
+          <button id="add-story-plus-btn" class="absolute bottom-0 right-0 w-4 h-4 rounded-full brand-gradient-bg text-white flex items-center justify-center text-xs font-extrabold ring-2 ring-white hover:scale-110 transition-transform" title="Add to story">+</button>
         </div>
-        <span class="text-xs text-zinc-600 font-medium">Your story</span>
+        <span class="text-xs text-zinc-700 font-medium">Your story</span>
       </div>
     `;
 
-    users.forEach(u => {
+    // Render other users' stories
+    stories.filter(s => s.userId !== currentUser.id).forEach(s => {
+      const isViewed = viewedStories.includes(s.userId);
       storiesHTML += `
-        <a href="profile.html?username=${encodeURIComponent(u.username)}" class="flex flex-col items-center gap-1.5 flex-shrink-0 group">
-          <div class="p-0.5 rounded-full story-ring-gradient group-hover:scale-105 transition-transform duration-200">
+        <div class="story-user-bubble flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer group" data-user-id="${s.userId}">
+          <div class="p-0.5 rounded-full ${isViewed ? 'story-ring-viewed' : 'story-ring-gradient'} group-hover:scale-105 transition-transform duration-200">
             <div class="p-0.5 bg-white rounded-full">
-              <img src="${u.avatar}" class="w-14 h-14 rounded-full object-cover">
+              <img src="${s.avatar}" class="w-14 h-14 rounded-full object-cover">
             </div>
           </div>
-          <span class="text-xs text-zinc-700 font-medium truncate max-w-[68px]">${u.username}</span>
-        </a>
+          <span class="text-xs ${isViewed ? 'text-zinc-500' : 'text-zinc-800 font-semibold'} truncate max-w-[68px]">${s.username}</span>
+        </div>
       `;
     });
 
     storiesContainer.innerHTML = storiesHTML;
+
+    // Bind Click Events
+    const myStoryBubble = document.getElementById('my-story-bubble');
+    const addStoryPlusBtn = document.getElementById('add-story-plus-btn');
+
+    if (myStoryBubble) {
+      myStoryBubble.addEventListener('click', (e) => {
+        if (e.target === addStoryPlusBtn || addStoryPlusBtn.contains(e.target)) {
+          document.getElementById('add-story-modal')?.classList.remove('hidden');
+        } else {
+          if (hasMyStory) {
+            StoryViewer.open(currentUser.id);
+          } else {
+            document.getElementById('add-story-modal')?.classList.remove('hidden');
+          }
+        }
+      });
+    }
+
+    storiesContainer.querySelectorAll('.story-user-bubble').forEach(bubble => {
+      bubble.addEventListener('click', () => {
+        const userId = bubble.dataset.userId;
+        StoryViewer.open(userId);
+      });
+    });
   },
 
   renderSidebar() {

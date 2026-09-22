@@ -145,5 +145,65 @@
       "createdAt": "2026-09-21T12:00:00Z",
       "comments": []
     }
+  ],
+  "stories": [
+    {
+      "userId": "user_2",
+      "username": "sarah_designs",
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+      "items": [
+        {
+          "id": "s_2_1",
+          "image": "https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=1080&q=80",
+          "caption": "Early morning light in Gion 🌿 Kyoto morning walk",
+          "timestamp": "2h ago"
+        },
+        {
+          "id": "s_2_2",
+          "image": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1080&q=80",
+          "caption": "Tokyo tower glowing under the twilight ✨",
+          "timestamp": "1h ago"
+        }
+      ]
+    },
+    {
+      "userId": "user_3",
+      "username": "alex_wanderer",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+      "items": [
+        {
+          "id": "s_3_1",
+          "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1080&q=80",
+          "caption": "Summit reached! 3,400m altitude 🏔️ The wind is unreal",
+          "timestamp": "4h ago"
+        }
+      ]
+    },
+    {
+      "userId": "user_4",
+      "username": "elena_snaps",
+      "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
+      "items": [
+        {
+          "id": "s_4_1",
+          "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1080&q=80",
+          "caption": "Espresso roast of the day ☕🥐 pure bliss",
+          "timestamp": "5h ago"
+        }
+      ]
+    },
+    {
+      "userId": "user_1",
+      "username": "vibesta_creator",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+      "items": [
+        {
+          "id": "s_1_1",
+          "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1080&q=80",
+          "caption": "Testing out Vibesta stories feature! 🚀✨ Let's vibe!",
+          "timestamp": "Just now"
+        }
+      ]
+    }
   ]
 }

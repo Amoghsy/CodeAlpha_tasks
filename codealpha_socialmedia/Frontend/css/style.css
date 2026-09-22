@@ -105,7 +105,31 @@ body {
 }
 
 .story-ring-gradient {
-  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  background: linear-gradient(45deg, #00F0FF 0%, #7000FF 35%, #FF007A 70%, #FF8A00 100%);
+}
+
+.story-ring-viewed {
+  background: #d1d5db;
+}
+
+/* Story floating heart reaction */
+@keyframes story-float-up {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-160px) scale(1.4);
+  }
+}
+
+.story-floating-reaction {
+  position: absolute;
+  bottom: 80px;
+  right: 24px;
+  pointer-events: none;
+  animation: story-float-up 1.2s ease-out forwards;
 }
 
 /* Square & 4:5 Aspect Ratios */

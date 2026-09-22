@@ -46,11 +46,15 @@ const Profile = {
     const following = u.followingCount || 0;
     const isFollowing = !!u.isFollowing;
 
+    const stories = (typeof api !== 'undefined' && api.getStoredStories) ? api.getStoredStories() : [];
+    const userStory = stories.find(s => s.userId === u.id || s.username === u.username);
+    const hasStory = userStory && userStory.items && userStory.items.length > 0;
+
     container.innerHTML = `
       <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-14 mb-8">
         
         <!-- Large Avatar with Gradient Ring -->
-        <div class="p-1 rounded-full story-ring-gradient flex-shrink-0">
+        <div id="profile-avatar-container" class="p-1 rounded-full ${hasStory ? 'story-ring-gradient cursor-pointer hover:scale-105' : 'border border-zinc-200'} flex-shrink-0 transition-transform duration-200" title="${hasStory ? 'View Story' : ''}">
           <div class="p-1 bg-white rounded-full">
             <img 
               src="${u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}" 
@@ -121,6 +125,16 @@ const Profile = {
         </div>
       </div>
     `;
+
+    // Story open on avatar click
+    const avatarContainer = document.getElementById('profile-avatar-container');
+    if (avatarContainer && hasStory) {
+      avatarContainer.addEventListener('click', () => {
+        if (typeof StoryViewer !== 'undefined') {
+          StoryViewer.open(u.id);
+        }
+      });
+    }
 
     // Follow / Unfollow Toggle Event
     const followBtn = document.getElementById('profile-follow-btn');

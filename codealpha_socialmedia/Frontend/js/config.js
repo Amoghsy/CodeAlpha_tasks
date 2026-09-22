@@ -8,6 +8,8 @@ const CONFIG = {
   USER_KEY: 'vibesta_user',
   MOCK_POSTS_KEY: 'vibesta_mock_posts',
   MOCK_USERS_KEY: 'vibesta_mock_users',
+  MOCK_STORIES_KEY: 'vibesta_mock_stories',
+  VIEWED_STORIES_KEY: 'vibesta_viewed_stories',
 
   // Fallback to mock data from JSON file if backend server is unreachable
   AUTO_MOCK_FALLBACK: true,

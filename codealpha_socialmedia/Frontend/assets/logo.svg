@@ -1,14 +1,34 @@
-<svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="vibestaGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#FFDD55" />
-      <stop offset="25%" stop-color="#FF543E" />
-      <stop offset="50%" stop-color="#C837AB" />
-      <stop offset="100%" stop-color="#7B1FA2" />
+    <!-- Vibrant Electric Neon Gradient -->
+    <linearGradient id="vibestaVGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="35%" stop-color="#7000FF" />
+      <stop offset="70%" stop-color="#FF007A" />
+      <stop offset="100%" stop-color="#FF8A00" />
     </linearGradient>
+    <linearGradient id="vibestaVGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF007A" />
+      <stop offset="50%" stop-color="#7000FF" />
+      <stop offset="100%" stop-color="#00F0FF" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#FF007A" flood-opacity="0.35"/>
+    </filter>
   </defs>
-  <rect x="5" y="5" width="90" height="90" rx="28" fill="url(#vibestaGrad)"/>
-  <rect x="18" y="18" width="64" height="64" rx="20" stroke="#FFFFFF" stroke-width="7" fill="none"/>
-  <circle cx="50" cy="50" r="15" stroke="#FFFFFF" stroke-width="7" fill="none"/>
-  <circle cx="68" cy="32" r="4.5" fill="#FFFFFF"/>
+
+  <!-- Sleek Rounded Diamond Shield Background -->
+  <rect x="8" y="8" width="84" height="84" rx="26" fill="#0C0D14" />
+  <rect x="8" y="8" width="84" height="84" rx="26" stroke="url(#vibestaVGrad1)" stroke-width="2.5" stroke-opacity="0.4" />
+
+  <!-- Iconic Stylized "V" with Pulse Waves -->
+  <!-- Left wing of the V -->
+  <path d="M26 28 C26 25, 30 23, 33 27 L50 63 L41 78 C40 80, 37 80, 36 78 L23 35 C22 32, 24 28, 26 28 Z" fill="url(#vibestaVGrad1)" filter="url(#glow)" />
+  
+  <!-- Right dynamic wing of the V folding over -->
+  <path d="M74 28 C74 25, 70 23, 67 27 L46 72 C44 76, 48 79, 51 75 L77 35 C78 32, 76 28, 74 28 Z" fill="url(#vibestaVGrad2)" filter="url(#glow)" />
+
+  <!-- Vibrant Center Energy Star / Pulse Sparkle -->
+  <path d="M50 32 L53 43 L64 46 L53 49 L50 60 L47 49 L36 46 L47 43 Z" fill="#FFFFFF" opacity="0.95" />
+  <circle cx="50" cy="46" r="2.5" fill="#00F0FF" />
 </svg>
