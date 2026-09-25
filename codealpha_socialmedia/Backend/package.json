@@ -1,0 +1,43 @@
+{
+  "name": "vibesta-backend",
+  "version": "1.0.0",
+  "description": "Backend for Vibesta - an Instagram-style mini social media app built with Express.js, Supabase (Postgres), and custom JWT authentication",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "migrate": "node src/db/migrate.js up",
+    "migrate:up": "node src/db/migrate.js up",
+    "migrate:down": "node src/db/migrate.js down",
+    "migrate:status": "node src/db/migrate.js status",
+    "seed": "node src/db/seed.js"
+  },
+  "keywords": [
+    "express",
+    "supabase",
+    "postgres",
+    "jwt",
+    "social-media",
+    "instagram-clone",
+    "vibesta"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.13.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
