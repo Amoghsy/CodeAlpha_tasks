@@ -20,9 +20,7 @@ router.post(
     body('image_url')
       .trim()
       .notEmpty()
-      .withMessage('Image URL is required')
-      .isURL()
-      .withMessage('Image URL must be a valid URL'),
+      .withMessage('Image URL is required'),
     body('caption')
       .optional()
       .trim()

@@ -27,6 +27,16 @@ const PostDetail = {
       const res = await api.get(`/posts/${postId}`);
       if (res && res.post) {
         this.post = res.post;
+
+        try {
+          const comRes = await api.get(`/posts/${postId}/comments`);
+          if (comRes && comRes.comments) {
+            this.post.comments = comRes.comments;
+          }
+        } catch (e) {
+          // comments fallback
+        }
+
         this.renderPost(container);
       } else {
         throw new Error('Post not found');
@@ -43,21 +53,25 @@ const PostDetail = {
 
   renderPost(container) {
     const post = this.post;
-    const author = post.author || {
+    const author = post.user || post.author || {
       username: 'vibesta_user',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
     };
-    const isLiked = !!post.isLiked;
-    const likesCount = post.likesCount || 0;
+    const authorAvatar = author.avatar_url || author.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
+    const authorName = author.full_name || author.name || '';
+    const postImage = post.image_url || post.image || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80';
+    const isLiked = post.is_liked !== undefined ? post.is_liked : !!post.isLiked;
+    const likesCount = post.likes_count !== undefined ? post.likes_count : (post.likesCount || 0);
     const comments = post.comments || [];
-    const formattedDate = post.createdAt ? new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
+    const dateVal = post.created_at || post.createdAt;
+    const formattedDate = dateVal ? new Date(dateVal).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
 
     container.innerHTML = `
       <div class="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm flex flex-col md:flex-row max-w-4xl mx-auto min-h-[520px]">
         
         <!-- Left Side: Post Photo -->
         <div class="md:w-7/12 bg-black flex items-center justify-center relative overflow-hidden group select-none post-photo-box">
-          <img src="${post.image}" alt="Post image" class="w-full h-full object-contain max-h-[600px]">
+          <img src="${postImage}" alt="Post image" class="w-full h-full object-contain max-h-[600px]">
           <div class="heart-animation-container absolute inset-0 pointer-events-none flex items-center justify-center"></div>
         </div>
 
@@ -68,11 +82,11 @@ const PostDetail = {
           <div class="p-4 border-b border-zinc-100 flex items-center justify-between">
             <a href="profile.html?username=${encodeURIComponent(author.username)}" class="flex items-center gap-3 group">
               <div class="p-0.5 rounded-full story-ring-gradient">
-                <img src="${author.avatar}" class="w-9 h-9 rounded-full object-cover border border-white">
+                <img src="${authorAvatar}" class="w-9 h-9 rounded-full object-cover border border-white">
               </div>
               <div>
                 <p class="text-sm font-bold text-zinc-900 group-hover:underline">${author.username}</p>
-                <p class="text-[11px] text-zinc-400">${author.name || ''}</p>
+                <p class="text-[11px] text-zinc-400">${authorName}</p>
               </div>
             </a>
             <button class="text-zinc-400 hover:text-zinc-700">
@@ -85,7 +99,7 @@ const PostDetail = {
             <!-- Caption as First Comment -->
             <div class="flex items-start gap-3">
               <a href="profile.html?username=${encodeURIComponent(author.username)}">
-                <img src="${author.avatar}" class="w-8 h-8 rounded-full object-cover border border-zinc-100">
+                <img src="${authorAvatar}" class="w-8 h-8 rounded-full object-cover border border-zinc-100">
               </a>
               <div class="text-xs text-zinc-800 space-y-1">
                 <p>
@@ -105,18 +119,26 @@ const PostDetail = {
                 <div class="py-8 text-center text-xs text-zinc-400" id="no-comments-msg">
                   No comments yet. Be the first to share your thoughts!
                 </div>
-              ` : comments.map(c => `
-                <div class="flex items-start gap-3">
-                  <img src="${c.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}" class="w-8 h-8 rounded-full object-cover border border-zinc-100">
-                  <div class="text-xs text-zinc-800 flex-1">
-                    <p>
-                      <a href="profile.html?username=${encodeURIComponent(c.username)}" class="font-bold text-zinc-900 mr-1.5 hover:underline">${this.escapeHTML(c.username)}</a>
-                      <span>${this.escapeHTML(c.text)}</span>
-                    </p>
-                    <span class="text-[10px] text-zinc-400 block mt-0.5">${c.createdAt || 'Recently'}</span>
+              ` : comments.map(c => {
+                const comUser = c.user || { username: c.username || 'user', avatar_url: c.avatar };
+                const comAvatar = comUser.avatar_url || comUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
+                const comUsername = comUser.username || c.username || 'user';
+                const comText = c.content || c.text || '';
+                const comDate = c.created_at || c.createdAt ? new Date(c.created_at || c.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : (c.createdAt || 'Recently');
+
+                return `
+                  <div class="flex items-start gap-3">
+                    <img src="${comAvatar}" class="w-8 h-8 rounded-full object-cover border border-zinc-100">
+                    <div class="text-xs text-zinc-800 flex-1">
+                      <p>
+                        <a href="profile.html?username=${encodeURIComponent(comUsername)}" class="font-bold text-zinc-900 mr-1.5 hover:underline">${this.escapeHTML(comUsername)}</a>
+                        <span>${this.escapeHTML(comText)}</span>
+                      </p>
+                      <span class="text-[10px] text-zinc-400 block mt-0.5">${comDate}</span>
+                    </div>
                   </div>
-                </div>
-              `).join('')}
+                `;
+              }).join('')}
             </div>
           </div>
 
@@ -197,11 +219,18 @@ const PostDetail = {
 
     // Toggle Like
     const toggleLike = async () => {
-      post.isLiked = !post.isLiked;
-      post.likesCount = post.isLiked ? post.likesCount + 1 : Math.max(0, post.likesCount - 1);
+      const isCurrentlyLiked = post.is_liked !== undefined ? post.is_liked : !!post.isLiked;
+      const newLikedState = !isCurrentlyLiked;
+      post.is_liked = newLikedState;
+      post.isLiked = newLikedState;
+      
+      let count = post.likes_count !== undefined ? post.likes_count : (post.likesCount || 0);
+      count = newLikedState ? count + 1 : Math.max(0, count - 1);
+      post.likes_count = count;
+      post.likesCount = count;
 
-      likesCountDisplay.textContent = `${post.likesCount.toLocaleString()} ${post.likesCount === 1 ? 'like' : 'likes'}`;
-      if (post.isLiked) {
+      likesCountDisplay.textContent = `${count.toLocaleString()} ${count === 1 ? 'like' : 'likes'}`;
+      if (newLikedState) {
         likeBtn.innerHTML = `
           <svg class="w-7 h-7 text-rose-500 fill-rose-500 animate-heart-pop" viewBox="0 0 24 24">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -235,7 +264,7 @@ const PostDetail = {
             container.appendChild(heart);
             setTimeout(() => heart.remove(), 900);
           }
-          if (!post.isLiked) toggleLike();
+          if (!post.is_liked && !post.isLiked) toggleLike();
         }
         lastTap = currentTime;
       });
@@ -253,6 +282,7 @@ const PostDetail = {
         if (!text) return;
 
         const currentUser = Auth.getUser() || { username: 'vibesta_user' };
+        const userAvatar = currentUser.avatar_url || currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
         
         try {
           commentBtn.disabled = true;
@@ -262,7 +292,7 @@ const PostDetail = {
 
           const newCommentHTML = `
             <div class="flex items-start gap-3 animate-in fade-in duration-200">
-              <img src="${currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}" class="w-8 h-8 rounded-full object-cover border border-zinc-100">
+              <img src="${userAvatar}" class="w-8 h-8 rounded-full object-cover border border-zinc-100">
               <div class="text-xs text-zinc-800 flex-1">
                 <p>
                   <span class="font-bold text-zinc-900 mr-1.5">${this.escapeHTML(currentUser.username)}</span>
@@ -280,7 +310,7 @@ const PostDetail = {
 
           commentInput.value = '';
 
-          await api.post(`/posts/${post.id}/comments`, { text });
+          await api.post(`/posts/${post.id}/comments`, { content: text, text });
           api.showToast('Comment added!', 'success');
         } catch (err) {
           api.showToast('Failed to post comment', 'error');

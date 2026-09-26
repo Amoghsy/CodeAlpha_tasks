@@ -5,11 +5,19 @@ class ApiClient {
   constructor() {
     this.baseUrl = CONFIG.API_BASE_URL;
     this.mockDataLoaded = false;
-    this.ensureMockDataLoaded();
+    if (CONFIG.AUTO_MOCK_FALLBACK) {
+      this.ensureMockDataLoaded();
+    } else {
+      // Clear old offline mock data from localStorage if backend is active
+      localStorage.removeItem(CONFIG.MOCK_USERS_KEY);
+      localStorage.removeItem(CONFIG.MOCK_POSTS_KEY);
+      localStorage.removeItem(CONFIG.MOCK_STORIES_KEY);
+    }
   }
 
   // Fetch mock data from JSON file if not already populated in storage
   async ensureMockDataLoaded() {
+    if (!CONFIG.AUTO_MOCK_FALLBACK) return;
     const hasUsers = !!localStorage.getItem(CONFIG.MOCK_USERS_KEY);
     const hasPosts = !!localStorage.getItem(CONFIG.MOCK_POSTS_KEY);
     const hasStories = !!localStorage.getItem(CONFIG.MOCK_STORIES_KEY);

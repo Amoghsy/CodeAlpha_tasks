@@ -113,31 +113,33 @@ const Feed = {
         <a href="edit-profile.html" class="text-xs font-semibold text-blue-600 hover:text-blue-700">Switch</a>
       </div>
 
-      <!-- Suggested for you -->
-      <div class="flex items-center justify-between mb-4">
-        <span class="text-xs font-bold text-zinc-400">Suggested for you</span>
-        <a href="#" class="text-xs font-semibold text-zinc-800 hover:opacity-70">See All</a>
-      </div>
+      ${suggestions.length > 0 ? `
+        <!-- Suggested for you -->
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-xs font-bold text-zinc-400">Suggested for you</span>
+          <a href="#" class="text-xs font-semibold text-zinc-800 hover:opacity-70">See All</a>
+        </div>
 
-      <div class="space-y-3.5">
-        ${suggestions.map(u => `
-          <div class="flex items-center justify-between">
-            <a href="profile.html?username=${encodeURIComponent(u.username)}" class="flex items-center gap-2.5 group">
-              <img src="${u.avatar}" class="w-9 h-9 rounded-full object-cover border border-zinc-100">
-              <div>
-                <p class="text-xs font-bold text-zinc-800 group-hover:underline">${u.username}</p>
-                <p class="text-[11px] text-zinc-400">Suggested for you</p>
-              </div>
-            </a>
-            <button 
-              class="sidebar-follow-btn text-xs font-semibold ${u.isFollowing ? 'text-zinc-500 hover:text-rose-500' : 'text-blue-600 hover:text-blue-700'}" 
-              data-user-id="${u.id}"
-            >
-              ${u.isFollowing ? 'Following' : 'Follow'}
-            </button>
-          </div>
-        `).join('')}
-      </div>
+        <div class="space-y-3.5">
+          ${suggestions.map(u => `
+            <div class="flex items-center justify-between">
+              <a href="profile.html?username=${encodeURIComponent(u.username)}" class="flex items-center gap-2.5 group">
+                <img src="${u.avatar}" class="w-9 h-9 rounded-full object-cover border border-zinc-100">
+                <div>
+                  <p class="text-xs font-bold text-zinc-800 group-hover:underline">${u.username}</p>
+                  <p class="text-[11px] text-zinc-400">Suggested for you</p>
+                </div>
+              </a>
+              <button 
+                class="sidebar-follow-btn text-xs font-semibold ${u.isFollowing ? 'text-zinc-500 hover:text-rose-500' : 'text-blue-600 hover:text-blue-700'}" 
+                data-user-id="${u.id}"
+              >
+                ${u.isFollowing ? 'Following' : 'Follow'}
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
 
       <!-- Footer Info -->
       <div class="mt-8 text-[11px] text-zinc-400 space-y-2">
@@ -235,15 +237,19 @@ const Feed = {
   },
 
   createPostCardHTML(post) {
-    const author = post.author || {
+    const author = post.user || post.author || {
       username: 'creator',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
     };
 
-    const isLiked = !!post.isLiked;
-    const likesCount = post.likesCount || 0;
+    const authorAvatar = author.avatar_url || author.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
+    const postImage = post.image_url || post.image || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80';
+    const isLiked = post.is_liked !== undefined ? post.is_liked : !!post.isLiked;
+    const likesCount = post.likes_count !== undefined ? post.likes_count : (post.likesCount || 0);
+    const commentsCount = post.comments_count !== undefined ? post.comments_count : (post.comments ? post.comments.length : 0);
     const comments = post.comments || [];
-    const formattedDate = post.createdAt ? new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Recently';
+    const dateVal = post.created_at || post.createdAt;
+    const formattedDate = dateVal ? new Date(dateVal).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Recently';
 
     return `
       <article class="bg-white border border-zinc-200/90 rounded-2xl overflow-hidden mb-6 shadow-sm transition-all post-card" data-post-id="${post.id}">
@@ -252,7 +258,7 @@ const Feed = {
         <header class="flex items-center justify-between px-4 py-3">
           <a href="profile.html?username=${encodeURIComponent(author.username)}" class="flex items-center gap-3 group">
             <div class="p-0.5 rounded-full story-ring-gradient">
-              <img src="${author.avatar}" alt="${author.username}" class="w-8 h-8 rounded-full object-cover border border-white">
+              <img src="${authorAvatar}" alt="${author.username}" class="w-8 h-8 rounded-full object-cover border border-white">
             </div>
             <div>
               <span class="text-sm font-bold text-zinc-900 group-hover:underline">${author.username}</span>
@@ -267,7 +273,7 @@ const Feed = {
         <!-- Post Image with Double Tap Container -->
         <div class="relative w-full aspect-square bg-zinc-950 overflow-hidden post-image-wrapper cursor-pointer select-none">
           <img 
-            src="${post.image}" 
+            src="${postImage}" 
             alt="Post photo" 
             class="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.01]" 
             loading="lazy"
@@ -452,7 +458,7 @@ const Feed = {
             submitCommentBtn.disabled = true;
             submitCommentBtn.textContent = '...';
 
-            await api.post(`/posts/${postId}/comments`, { text });
+            await api.post(`/posts/${postId}/comments`, { content: text, text });
             api.showToast('Comment posted!', 'success');
             commentInput.value = '';
             

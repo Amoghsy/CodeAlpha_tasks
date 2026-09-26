@@ -145,6 +145,7 @@ const Auth = {
 
           const response = await api.post('/auth/register', {
             username,
+            full_name: fullName,
             fullName,
             email,
             password

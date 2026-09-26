@@ -147,22 +147,28 @@ const UploadController = {
           Publishing...
         `;
 
-        const formData = new FormData();
-        formData.append('caption', caption);
-        formData.append('aspectRatio', this.aspectRatio);
-        formData.append('imagePreview', this.selectedDataUrl);
+        let finalImageUrl = this.selectedDataUrl;
         if (this.selectedFile) {
-          formData.append('image', this.selectedFile);
+          try {
+            const uploadData = new FormData();
+            uploadData.append('image', this.selectedFile);
+            const uploadRes = await api.post('/upload', uploadData, true);
+            if (uploadRes && uploadRes.url) {
+              finalImageUrl = uploadRes.url;
+            }
+          } catch (upErr) {
+            console.warn('Storage upload error, using data URL:', upErr);
+          }
         }
 
-        const res = await api.post('/posts', formData, true);
-        if (res && res.success) {
+        const res = await api.post('/posts', { image_url: finalImageUrl, caption });
+        if (res && (res.success || res.post)) {
           api.showToast('Post created successfully!', 'success');
           setTimeout(() => {
             window.location.href = 'index.html';
           }, 600);
         } else {
-          throw new Error(res.message || 'Failed to publish post');
+          throw new Error(res.error || res.message || 'Failed to publish post');
         }
       } catch (err) {
         api.showToast(err.message || 'Failed to create post', 'error');

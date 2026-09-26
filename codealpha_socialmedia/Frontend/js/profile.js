@@ -26,10 +26,17 @@ const Profile = {
     const gridContainer = document.getElementById('profile-grid-container');
 
     try {
-      const res = await api.get(`/users/${username}`);
+      const res = await api.get(`/users/${encodeURIComponent(username)}`);
       if (res && res.user) {
         this.user = res.user;
-        this.posts = res.posts || [];
+
+        try {
+          const postsRes = await api.get(`/users/${encodeURIComponent(username)}/posts`);
+          this.posts = (postsRes && postsRes.posts) ? postsRes.posts : (res.posts || []);
+        } catch (e) {
+          this.posts = res.posts || [];
+        }
+
         this.renderHeader(headerContainer);
         this.renderGrid(gridContainer);
       }
@@ -41,10 +48,13 @@ const Profile = {
   renderHeader(container) {
     if (!container || !this.user) return;
     const u = this.user;
-    const postCount = this.posts.length || u.postsCount || 0;
-    const followers = u.followersCount || 0;
-    const following = u.followingCount || 0;
-    const isFollowing = !!u.isFollowing;
+    const counts = u.counts || {};
+    const postCount = counts.posts !== undefined ? counts.posts : (this.posts.length || u.postsCount || 0);
+    const followers = counts.followers !== undefined ? counts.followers : (u.followersCount || 0);
+    const following = counts.following !== undefined ? counts.following : (u.followingCount || 0);
+    const isFollowing = u.is_following !== undefined ? u.is_following : !!u.isFollowing;
+    const avatarUrl = u.avatar_url || u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
+    const displayName = u.full_name || u.name || u.username;
 
     const stories = (typeof api !== 'undefined' && api.getStoredStories) ? api.getStoredStories() : [];
     const userStory = stories.find(s => s.userId === u.id || s.username === u.username);
@@ -57,7 +67,7 @@ const Profile = {
         <div id="profile-avatar-container" class="p-1 rounded-full ${hasStory ? 'story-ring-gradient cursor-pointer hover:scale-105' : 'border border-zinc-200'} flex-shrink-0 transition-transform duration-200" title="${hasStory ? 'View Story' : ''}">
           <div class="p-1 bg-white rounded-full">
             <img 
-              src="${u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}" 
+              src="${avatarUrl}" 
               alt="${u.username}" 
               class="w-24 h-24 md:w-36 md:h-36 rounded-full object-cover border-2 border-white shadow-sm"
             />
@@ -119,7 +129,7 @@ const Profile = {
 
           <!-- Bio & Name -->
           <div class="text-xs md:text-sm text-zinc-700 space-y-1">
-            <h3 class="font-bold text-zinc-900">${u.name || u.username}</h3>
+            <h3 class="font-bold text-zinc-900">${displayName}</h3>
             <p class="whitespace-pre-line text-zinc-600 leading-relaxed">${u.bio || '✨ Living life in vibrant colors • Vibesta creator'}</p>
           </div>
         </div>
@@ -159,13 +169,13 @@ const Profile = {
         followersDisplay.textContent = count.toLocaleString();
 
         try {
-          await api.post(`/users/${u.id}/follow`);
+          await api.post(`/users/${encodeURIComponent(u.username)}/follow`);
           api.showToast(newFollowingState ? `You are now following ${u.username}` : `Unfollowed ${u.username}`, 'info');
         } catch (err) {
           // Revert
           followBtn.dataset.following = currentlyFollowing;
           followBtn.textContent = currentlyFollowing ? 'Following' : 'Follow';
-          followersDisplay.textContent = u.followersCount.toLocaleString();
+          followersDisplay.textContent = followers.toLocaleString();
           api.showToast('Could not update follow state', 'error');
         }
       });
@@ -194,13 +204,14 @@ const Profile = {
     }
 
     container.innerHTML = this.posts.map(post => {
-      const likes = post.likesCount || 0;
-      const comments = post.comments ? post.comments.length : 0;
+      const likes = post.likes_count !== undefined ? post.likes_count : (post.likesCount || 0);
+      const comments = post.comments_count !== undefined ? post.comments_count : (post.comments ? post.comments.length : 0);
+      const postImage = post.image_url || post.image || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80';
 
       return `
         <a href="post.html?id=${post.id}" class="grid-item relative aspect-square bg-zinc-100 overflow-hidden rounded-lg group block">
           <img 
-            src="${post.image}" 
+            src="${postImage}" 
             alt="Thumbnail" 
             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"

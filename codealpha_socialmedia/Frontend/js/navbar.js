@@ -285,15 +285,22 @@ const Navbar = {
           submitBtn.disabled = true;
           submitBtn.textContent = 'Posting...';
 
-          const formData = new FormData();
-          formData.append('caption', caption);
-          formData.append('imagePreview', selectedImageBase64);
-          if (fileInput && fileInput.files[0]) {
-            formData.append('image', fileInput.files[0]);
+          let finalImageUrl = selectedImageBase64;
+          if (fileInput && fileInput.files && fileInput.files[0]) {
+            try {
+              const uploadData = new FormData();
+              uploadData.append('image', fileInput.files[0]);
+              const uploadRes = await api.post('/upload', uploadData, true);
+              if (uploadRes && uploadRes.url) {
+                finalImageUrl = uploadRes.url;
+              }
+            } catch (upErr) {
+              console.warn('Storage upload error, falling back to data URL:', upErr);
+            }
           }
 
-          const res = await api.post('/posts', formData, true);
-          if (res && res.success) {
+          const res = await api.post('/posts', { image_url: finalImageUrl, caption });
+          if (res && (res.success || res.post)) {
             api.showToast('Post shared to Vibesta!', 'success');
             modal.classList.add('hidden');
             modalForm.reset();

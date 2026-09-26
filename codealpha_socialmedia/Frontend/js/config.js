@@ -11,8 +11,8 @@ const CONFIG = {
   MOCK_STORIES_KEY: 'vibesta_mock_stories',
   VIEWED_STORIES_KEY: 'vibesta_viewed_stories',
 
-  // Fallback to mock data from JSON file if backend server is unreachable
-  AUTO_MOCK_FALLBACK: true,
+  // Disable mock data fallback so frontend connects directly to backend database
+  AUTO_MOCK_FALLBACK: false,
 
   // Helper to dynamically resolve mock JSON path depending on current HTML directory
   getMockDataUrl() {
