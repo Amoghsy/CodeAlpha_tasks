@@ -8,6 +8,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Fixed / Sticky Feed Sidebar */
+.sticky-sidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 5rem;
+  align-self: flex-start;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -22,6 +30,15 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
+}
+
+/* Hide scrollbar for clean carousels & sticky containers */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Heart Pop Keyframe */
@@ -97,6 +114,7 @@ body {
 .brand-gradient-text {
   background: linear-gradient(135deg, #FF0080 0%, #7928CA 50%, #FF0080 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
