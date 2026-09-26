@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders | NovaStore</title>
+  <meta name="description" content="View your order history, delivery status, and purchase receipts on NovaStore.">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="index.html" class="brand-logo">
+          <div class="logo-icon"><i class="fas fa-cube"></i></div>
+          <span>Nova<span class="accent">Store</span></span>
+        </a>
+
+        <form class="nav-search-form">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" name="search" placeholder="Search devices, accessories, audio...">
+        </form>
+
+        <div class="nav-actions">
+          <a href="index.html" class="nav-link-item nav-desktop-links"><i class="fas fa-store"></i> Shop</a>
+          <a href="cart.html" class="nav-cart-btn" aria-label="Shopping Cart">
+            <i class="fas fa-shopping-bag"></i>
+            <span class="cart-badge" style="display:none;">0</span>
+          </a>
+          <div id="nav-auth-container"></div>
+          <button class="mobile-menu-btn" id="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Overlay & Nav -->
+  <div class="mobile-overlay" id="mobile-overlay"></div>
+  <aside class="mobile-drawer" id="mobile-drawer">
+    <div class="mobile-drawer-header">
+      <a href="index.html" class="brand-logo">
+        <div class="logo-icon"><i class="fas fa-cube"></i></div>
+        <span>Nova<span class="accent">Store</span></span>
+      </a>
+      <button class="mobile-drawer-close" id="mobile-drawer-close">&times;</button>
+    </div>
+    <div class="mobile-nav-links">
+      <a href="index.html"><i class="fas fa-store"></i> All Products</a>
+      <a href="cart.html"><i class="fas fa-shopping-bag"></i> My Cart</a>
+      <a href="orders.html" class="active"><i class="fas fa-box"></i> Order History</a>
+    </div>
+    <div id="mobile-nav-auth-container" style="margin-top: auto; padding-top: 1.5rem;"></div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div style="margin: 2rem 0 1.5rem; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-size: 1.85rem;">Order History</h1>
+        <p class="text-muted" style="font-size: 0.95rem;">Track shipments, review past receipts, and re-order previous favorites.</p>
+      </div>
+      <a href="index.html" class="btn btn-outline btn-sm"><i class="fas fa-plus"></i> Shop More</a>
+    </div>
+
+    <div id="orders-view-container">
+      <!-- Loading skeleton -->
+      <div class="order-card">
+        <div class="skeleton" style="height: 60px;"></div>
+        <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+          <div class="skeleton" style="height: 50px;"></div>
+          <div class="skeleton" style="height: 50px;"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top: none;">
+        <span>&copy; 2026 NovaStore Inc. All rights reserved.</span>
+        <a href="index.html" class="text-primary"><i class="fas fa-arrow-left"></i> Return to Store</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/constants.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/main.js"></script>
+
+  <script>
+    async function loadOrdersPage() {
+      const container = document.getElementById('orders-view-container');
+      const isLoggedIn = window.auth.isAuthenticated();
+
+      if (!isLoggedIn) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-user-lock"></i></div>
+            <h2>Sign in to view your orders</h2>
+            <p class="text-muted" style="margin: 0.75rem auto 1.5rem; max-width: 440px;">
+              You need to be logged into your account to access your purchase history, invoices, and shipment tracking.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+              <a href="login.html?returnUrl=orders.html" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Log In Now
+              </a>
+              <button class="btn btn-secondary" onclick="loginDemoAndRefresh()">
+                <i class="fas fa-user-check"></i> Demo Quick Login
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const res = await api.getOrders();
+        const orders = res.data || [];
+
+        if (orders.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon"><i class="fas fa-box-open"></i></div>
+              <h2>No past orders yet</h2>
+              <p class="text-muted" style="margin: 0.5rem 0 1.5rem;">When you place orders, they will appear here with live tracking information.</p>
+              <a href="index.html" class="btn btn-primary">Start Shopping</a>
+            </div>
+          `;
+          return;
+        }
+
+        renderOrdersList(orders);
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon text-danger"><i class="fas fa-triangle-exclamation"></i></div>
+            <h3>Unable to load orders</h3>
+            <p class="text-muted">${err.message || 'Please try again later.'}</p>
+            <button class="btn btn-primary" onclick="loadOrdersPage()" style="margin-top: 1rem;">Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    function renderOrdersList(orders) {
+      const container = document.getElementById('orders-view-container');
+
+      container.innerHTML = orders.map(order => {
+        const dateFormatted = new Date(order.date).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+
+        let statusBadge = 'badge-primary';
+        if (order.status === 'Delivered') statusBadge = 'badge-success';
+        if (order.status === 'Processing') statusBadge = 'badge-warning';
+        if (order.status === 'Cancelled') statusBadge = 'badge-danger';
+
+        const items = order.items || [];
+
+        return `
+          <div class="order-card">
+            <div class="order-card-header">
+              <div class="order-meta-group">
+                <div class="order-meta-item">
+                  <small>Order Placed</small>
+                  <span>${dateFormatted}</span>
+                </div>
+                <div class="order-meta-item">
+                  <small>Order Number</small>
+                  <span>${order.id}</span>
+                </div>
+                <div class="order-meta-item">
+                  <small>Total Amount</small>
+                  <span class="text-primary font-weight-bold">${formatPrice(order.total)}</span>
+                </div>
+                <div class="order-meta-item">
+                  <small>Status</small>
+                  <span class="badge ${statusBadge}">${order.status || 'Processing'}</span>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-outline btn-sm" onclick="printReceipt('${order.id}')">
+                  <i class="fas fa-receipt"></i> Print Receipt
+                </button>
+              </div>
+            </div>
+
+            <div class="order-items-list">
+              ${items.map(item => `
+                <div class="order-item-row">
+                  <div class="order-item-detail">
+                    <img src="${item.image}" alt="${item.name}" class="order-item-thumb" onerror="this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800'">
+                    <div>
+                      <h4 style="font-size: 0.98rem;"><a href="product.html?id=${item.productId || 1}">${item.name}</a></h4>
+                      <span class="text-muted" style="font-size: 0.85rem;">Qty: ${item.quantity} × ${formatPrice(item.price)}</span>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; align-items: center; gap: 1rem;">
+                    <strong style="font-size: 1.05rem;">${formatPrice(item.price * item.quantity)}</strong>
+                    <button class="btn btn-secondary btn-sm" onclick="reorderSingleItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                      <i class="fas fa-rotate"></i> Buy Again
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+
+              ${order.shippingAddress ? `
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--border); font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: gap: 0.5rem;">
+                  <span><i class="fas fa-location-dot"></i> Shipped to: <strong>${order.shippingAddress.fullName || ''}</strong>, ${order.shippingAddress.address || ''}, ${order.shippingAddress.city || ''}</span>
+                  <span class="badge badge-primary"><i class="fas fa-truck"></i> Standard Express</span>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loginDemoAndRefresh() {
+      try {
+        await auth.login('alex.mercer@example.com', 'password123');
+        showToast('Logged in as Alex Mercer!', 'success');
+        loadOrdersPage();
+      } catch (e) {
+        showToast('Demo login error', 'error');
+      }
+    }
+
+    function reorderSingleItem(item) {
+      window.cartManager.addItem({
+        id: item.productId || item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        stock: 50
+      }, 1);
+      showToast(`Added "${item.name}" to cart`, 'success');
+    }
+
+    function printReceipt(orderId) {
+      window.print();
+    }
+
+    document.addEventListener('DOMContentLoaded', loadOrdersPage);
+  </script>
+</body>
+</html>

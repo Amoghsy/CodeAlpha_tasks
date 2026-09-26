@@ -1,0 +1,277 @@
+{
+  "categories": [
+    { "id": "all", "name": "All Products", "icon": "fa-th-large" },
+    { "id": "electronics", "name": "Electronics", "icon": "fa-laptop" },
+    { "id": "audio", "name": "Audio & Sound", "icon": "fa-headphones" },
+    { "id": "wearables", "name": "Wearables", "icon": "fa-clock" },
+    { "id": "accessories", "name": "Accessories", "icon": "fa-gem" },
+    { "id": "gaming", "name": "Gaming Gear", "icon": "fa-gamepad" }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "NovaPulse Wireless Noise-Cancelling Headphones",
+      "slug": "novapulse-wireless-headphones",
+      "category": "audio",
+      "price": 249.99,
+      "originalPrice": 299.99,
+      "rating": 4.8,
+      "reviewsCount": 128,
+      "stock": 15,
+      "badge": "Best Seller",
+      "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&auto=format&fit=crop&q=80"
+      ],
+      "description": "Experience pristine audio clarity and immersive soundscapes with the NovaPulse Studio Pro headphones. Featuring hybrid active noise cancellation, custom 40mm beryllium drivers, up to 45 hours of battery life, and ultra-plush memory foam earcups.",
+      "features": [
+        "Hybrid Active Noise Cancellation (ANC)",
+        "Up to 45 hours playback with Fast Charge (10 min = 5 hours)",
+        "Bluetooth 5.3 with multipoint device connection",
+        "Lossless audio streaming codec support (LDAC & AAC)",
+        "Built-in quad microphone array with AI clear voice capture"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "AeroTitan Ultra Smartwatch Series X",
+      "slug": "aerotitan-smartwatch-series-x",
+      "category": "wearables",
+      "price": 319.50,
+      "originalPrice": 379.00,
+      "rating": 4.9,
+      "reviewsCount": 94,
+      "stock": 8,
+      "badge": "Hot Deal",
+      "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&auto=format&fit=crop&q=80"
+      ],
+      "description": "Engineered for performance and elegance. The AeroTitan Ultra features aerospace-grade titanium casing, sapphire crystal AMOLED display, advanced biometric health monitoring (ECG, SpO2, HRV), dual-band GPS, and 100m water resistance.",
+      "features": [
+        "Grade 5 Titanium Body & Sapphire Crystal Display",
+        "Comprehensive health suite: ECG, Heart Rate, SpO2, Sleep Stages",
+        "Dual-frequency precision GPS with offline topography maps",
+        "Up to 14 days standard battery life, 60 hours in GPS mode",
+        "10 ATM water resistance (100 meters dive-rated)"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "LuminaView 4K Creator Ultra-Wide Monitor 34\"",
+      "slug": "luminaview-4k-ultrawide-monitor",
+      "category": "electronics",
+      "price": 649.00,
+      "originalPrice": 749.00,
+      "rating": 4.7,
+      "reviewsCount": 67,
+      "stock": 5,
+      "badge": "Editor's Choice",
+      "image": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=800&auto=format&fit=crop&q=80"
+      ],
+      "description": "Transform your productivity and creative workspace. Featuring a curved 3440 x 1440 Nano-IPS panel, 98% DCI-P3 color gamut, 144Hz refresh rate, HDR600 certification, and 90W USB-C single cable power delivery.",
+      "features": [
+        "34-inch WQHD (3440 x 1440) 21:9 Curved Nano-IPS Display",
+        "Factory color-calibrated Delta E < 2 with 98% DCI-P3",
+        "144Hz Refresh Rate & 1ms response time with G-Sync compatibility",
+        "90W USB-C Power Delivery with KVM switch functionality",
+        "Integrated dual 7W stereo speakers with Waves MaxxAudio"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "HyperGlide Pro Wireless Mechanical Keyboard",
+      "slug": "hyperglide-pro-keyboard",
+      "category": "gaming",
+      "price": 139.99,
+      "originalPrice": 169.99,
+      "rating": 4.6,
+      "reviewsCount": 112,
+      "stock": 20,
+      "badge": "Popular",
+      "image": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&auto=format&fit=crop&q=80"
+      ],
+      "description": "Crafted for speed, precision, and tactile bliss. Hot-swappable mechanical switches, CNC aluminum frame, double-shot PBT keycaps, per-key RGB backlighting, and triple connectivity (2.4GHz wireless, Bluetooth 5.1, USB-C).",
+      "features": [
+        "Hot-swappable custom lubricated linear switches",
+        "CNC anodized aluminum base plate with sound-dampening foam",
+        "South-facing per-key RGB with dynamic sound visualizer",
+        "Tri-mode connectivity with seamless 3-device switching",
+        "4000mAh battery providing up to 200 hours without backlight"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Vortex Stealth RGB Gaming Mouse",
+      "slug": "vortex-stealth-gaming-mouse",
+      "category": "gaming",
+      "price": 79.99,
+      "originalPrice": 99.99,
+      "rating": 4.5,
+      "reviewsCount": 86,
+      "stock": 25,
+      "badge": "",
+      "image": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80"
+      ],
+      "description": "Ultra-lightweight 58g ergonomic esports mouse equipped with a 26,000 DPI optical sensor, optical micro-switches rated for 90M clicks, PTFE virgin-grade glide feet, and hyper-polling 4000Hz wireless technology.",
+      "features": [
+        "Featherlight 58g honeycomb internal skeleton",
+        "26,000 DPI Focus Pro optical sensor with 650 IPS tracking",
+        "Optical switches with zero debounce delay (0.2ms actuation)",
+        "Pure PTFE rounded-edge feet for friction-free glide",
+        "Up to 90 hours continuous competitive gaming battery"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Zenith Leather Minimalist MagSafe Wallet",
+      "slug": "zenith-leather-magsafe-wallet",
+      "category": "accessories",
+      "price": 45.00,
+      "originalPrice": 55.00,
+      "rating": 4.4,
+      "reviewsCount": 53,
+      "stock": 30,
+      "badge": "New",
+      "image": "https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80"
+      ],
+      "description": "Handcrafted from full-grain Italian vegetable-tanned leather. Holds up to 4 cards and folded cash with built-in RFID shielding and ultra-strong N52 neodymium magnets that snap securely to MagSafe-compatible phones.",
+      "features": [
+        "Full-grain top-tier Italian leather with patina aging",
+        "Powerful N52 magnetic alignment system (3x stronger hold)",
+        "Integrated RFID blocking layer prevents electronic theft",
+        "Slimline thumb slot for swift card deployment",
+        "Compact form factor adds zero bulk to your pocket"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "OmniCharge 100W GaN Fast Charger & Hub",
+      "slug": "omnicharge-100w-gan-charger",
+      "category": "accessories",
+      "price": 69.99,
+      "originalPrice": 85.00,
+      "rating": 4.9,
+      "reviewsCount": 140,
+      "stock": 0,
+      "badge": "Out of Stock",
+      "image": "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format&fit=crop&q=80"
+      ],
+      "description": "Next-gen Gallium Nitride (GaN III) fast desktop charger with 4 ports (3x USB-C PD 3.0, 1x USB-A QC 4.0). Intelligently distributes 100W max power to charge laptops, tablets, and smartphones simultaneously.",
+      "features": [
+        "100W maximum output with Power Delivery 3.0 PPS",
+        "Compact GaN III technology operates 40% cooler",
+        "Simultaneously fast-charges 2 MacBooks or 4 devices",
+        "Universal worldwide voltage (100V - 240V) with foldable prongs",
+        "Over-voltage, thermal, and short-circuit multi-protection suite"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "SonicBlast 360 Waterproof Bluetooth Speaker",
+      "slug": "sonicblast-waterproof-speaker",
+      "category": "audio",
+      "price": 119.00,
+      "originalPrice": 149.00,
+      "rating": 4.7,
+      "reviewsCount": 89,
+      "stock": 12,
+      "badge": "Outdoor Favorite",
+      "image": "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=800&auto=format&fit=crop&q=80",
+      "gallery": [
+        "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=800&auto=format&fit=crop&q=80"
+      ],
+      "description": "Room-filling 360° omnidirectional sound with deep, punchy dual passive bass radiators. IP67 waterproof, dustproof, and floating design, ready for beach days, camping adventures, and pool parties.",
+      "features": [
+        "360° Omnidirectional acoustic array with dual subwoofers",
+        "IP67 certified waterproof, dust-resistant, and drop-proof",
+        "PartySync feature links up to 50 speakers together",
+        "24-hour battery life with USB power bank output",
+        "Built-in hands-free speakerphone with noise suppression"
+      ]
+    }
+  ],
+  "mockUser": {
+    "id": "usr_987123",
+    "name": "Alex Mercer",
+    "email": "alex.mercer@example.com",
+    "token": "mock_jwt_token_header_payload_signature_ecommerce_app"
+  },
+  "mockOrders": [
+    {
+      "id": "ORD-98421",
+      "date": "2026-09-18T14:32:00.000Z",
+      "status": "Delivered",
+      "total": 319.50,
+      "subtotal": 319.50,
+      "shipping": 0.00,
+      "tax": 25.56,
+      "shippingAddress": {
+        "fullName": "Alex Mercer",
+        "address": "742 Evergreen Terrace",
+        "city": "Springfield",
+        "state": "IL",
+        "zip": "62704",
+        "country": "United States"
+      },
+      "items": [
+        {
+          "productId": 2,
+          "name": "AeroTitan Ultra Smartwatch Series X",
+          "price": 319.50,
+          "quantity": 1,
+          "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80"
+        }
+      ]
+    },
+    {
+      "id": "ORD-97510",
+      "date": "2026-08-25T10:15:00.000Z",
+      "status": "Delivered",
+      "total": 294.99,
+      "subtotal": 249.99,
+      "shipping": 0.00,
+      "tax": 20.00,
+      "shippingAddress": {
+        "fullName": "Alex Mercer",
+        "address": "742 Evergreen Terrace",
+        "city": "Springfield",
+        "state": "IL",
+        "zip": "62704",
+        "country": "United States"
+      },
+      "items": [
+        {
+          "productId": 1,
+          "name": "NovaPulse Wireless Noise-Cancelling Headphones",
+          "price": 249.99,
+          "quantity": 1,
+          "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80"
+        },
+        {
+          "productId": 6,
+          "name": "Zenith Leather Minimalist MagSafe Wallet",
+          "price": 45.00,
+          "quantity": 1,
+          "image": "https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80"
+        }
+      ]
+    }
+  ]
+}

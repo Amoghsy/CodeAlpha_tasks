@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | NovaStore</title>
+  <meta name="description" content="Complete your purchase securely on NovaStore.">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="index.html" class="brand-logo">
+          <div class="logo-icon"><i class="fas fa-cube"></i></div>
+          <span>Nova<span class="accent">Store</span></span>
+        </a>
+
+        <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-lock text-success"></i> Secure Checkout
+        </div>
+
+        <div class="nav-actions">
+          <a href="cart.html" class="nav-link-item"><i class="fas fa-arrow-left"></i> Return to Cart</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div style="margin: 2rem 0 1rem;">
+      <h1 style="font-size: 1.85rem;">Checkout</h1>
+      <p class="text-muted" style="font-size: 0.95rem;">Please review your delivery details and choose a payment method.</p>
+    </div>
+
+    <div id="checkout-view-container">
+      <!-- Injected dynamically based on cart items -->
+    </div>
+  </main>
+
+  <!-- Order Success Modal -->
+  <div id="order-success-modal" class="mobile-overlay" style="display: none; align-items: center; justify-content: center;">
+    <div class="auth-card" style="max-width: 520px; text-align: center; animation: scaleIn 0.3s ease;">
+      <div style="width: 70px; height: 70px; background: var(--accent-light); color: var(--accent); border-radius: var(--radius-full); display: inline-flex; align-items: center; justify-content: center; font-size: 2.2rem; margin-bottom: 1.25rem;">
+        <i class="fas fa-check"></i>
+      </div>
+      <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Order Placed Successfully!</h2>
+      <p class="text-muted" style="margin-bottom: 1.5rem;">Thank you for shopping with NovaStore. We've received your order and are preparing it for shipment.</p>
+      
+      <div style="background: var(--bg-alt); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.75rem; text-align: left;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem; font-size: 0.9rem;">
+          <span class="text-muted">Order ID:</span>
+          <strong id="modal-order-id">ORD-XXXXX</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+          <span class="text-muted">Total Paid:</span>
+          <strong id="modal-order-total" class="text-primary">$0.00</strong>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem;">
+        <a href="orders.html" class="btn btn-primary" style="flex: 1;"><i class="fas fa-box"></i> View in Orders</a>
+        <a href="index.html" class="btn btn-outline" style="flex: 1;">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top: none;">
+        <span>&copy; 2026 NovaStore Inc. All rights reserved.</span>
+        <span><i class="fas fa-shield-alt text-success"></i> 256-bit Bank Grade Encryption</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/constants.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/main.js"></script>
+
+  <script>
+    let selectedPaymentMethod = 'card';
+
+    function initCheckout() {
+      const items = window.cartManager.getItems();
+      const container = document.getElementById('checkout-view-container');
+
+      if (!items || items.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fas fa-shopping-cart"></i></div>
+            <h2>No items to checkout</h2>
+            <p class="text-muted" style="margin: 0.5rem 0 1.5rem;">Your shopping cart is currently empty.</p>
+            <a href="index.html" class="btn btn-primary">Browse Catalog</a>
+          </div>
+        `;
+        return;
+      }
+
+      const summary = window.cartManager.getSummary();
+      const currentUser = window.auth ? window.auth.getUser() : null;
+
+      container.innerHTML = `
+        <div class="checkout-layout">
+          <!-- Checkout Form Section -->
+          <div>
+            <form id="checkout-form" onsubmit="handlePlaceOrder(event)">
+              <!-- Step 1: Shipping Details -->
+              <div class="checkout-card">
+                <h3 class="checkout-step-title">
+                  <span class="step-num">1</span> Delivery & Shipping Address
+                </h3>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" for="full-name">Full Name *</label>
+                    <input type="text" id="full-name" class="form-control" placeholder="John Doe" value="${currentUser?.name || ''}" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="email">Email Address *</label>
+                    <input type="email" id="email" class="form-control" placeholder="john@example.com" value="${currentUser?.email || ''}" required>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" class="form-control" placeholder="+1 (555) 000-0000" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="country">Country *</label>
+                    <select id="country" class="form-control" required>
+                      <option value="United States">United States</option>
+                      <option value="Canada">Canada</option>
+                      <option value="United Kingdom">United Kingdom</option>
+                      <option value="Germany">Germany</option>
+                      <option value="Australia">Australia</option>
+                      <option value="India">India</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="address">Street Address *</label>
+                  <input type="text" id="address" class="form-control" placeholder="123 Innovation Way, Apt 4B" required>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" for="city">City *</label>
+                    <input type="text" id="city" class="form-control" placeholder="San Francisco" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="state">State / Province *</label>
+                    <input type="text" id="state" class="form-control" placeholder="CA" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="zip">ZIP / Postal Code *</label>
+                    <input type="text" id="zip" class="form-control" placeholder="94107" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2: Payment Method -->
+              <div class="checkout-card">
+                <h3 class="checkout-step-title">
+                  <span class="step-num">2</span> Payment Method
+                </h3>
+
+                <div class="payment-methods">
+                  <label class="payment-option selected" id="opt-card" onclick="selectPayment('card')">
+                    <input type="radio" name="paymentMethod" value="card" checked style="display:none;">
+                    <i class="fas fa-credit-card text-primary" style="font-size: 1.25rem;"></i>
+                    <div>
+                      <strong>Credit / Debit Card</strong>
+                      <small class="text-muted" style="display:block;">Visa, Mastercard, Amex</small>
+                    </div>
+                  </label>
+
+                  <label class="payment-option" id="opt-cod" onclick="selectPayment('cod')">
+                    <input type="radio" name="paymentMethod" value="cod" style="display:none;">
+                    <i class="fas fa-hand-holding-dollar text-primary" style="font-size: 1.25rem;"></i>
+                    <div>
+                      <strong>Cash on Delivery</strong>
+                      <small class="text-muted" style="display:block;">Pay at your doorstep</small>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Card Form Fields -->
+                <div id="card-fields">
+                  <div class="form-group">
+                    <label class="form-label" for="card-num">Card Number</label>
+                    <div class="input-with-icon">
+                      <i class="fas fa-credit-card input-icon"></i>
+                      <input type="text" id="card-num" class="form-control" placeholder="4532 •••• •••• 8921" maxlength="19">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label" for="card-exp">Expiry Date</label>
+                      <input type="text" id="card-exp" class="form-control" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="card-cvv">CVV / CVC</label>
+                      <input type="password" id="card-cvv" class="form-control" placeholder="•••" maxlength="4">
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" id="place-order-btn" class="btn btn-primary btn-block btn-lg" style="margin-top: 1.5rem;">
+                  <i class="fas fa-lock"></i> Place Order (${formatPrice(summary.total)})
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Order Summary Sidebar -->
+          <div class="summary-card">
+            <h3 class="summary-title">Order Items (${summary.itemCount})</h3>
+
+            <div style="max-height: 280px; overflow-y: auto; margin-bottom: 1.25rem; padding-right: 0.5rem;">
+              ${items.map(item => `
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.85rem;">
+                  <img src="${item.image}" alt="${item.name}" style="width: 44px; height: 44px; border-radius: var(--radius-sm); object-fit: cover; background: #f8fafc;">
+                  <div style="flex: 1; font-size: 0.85rem;">
+                    <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;">${item.name}</div>
+                    <span class="text-muted">Qty: ${item.quantity} × ${formatPrice(item.price)}</span>
+                  </div>
+                  <strong style="font-size: 0.9rem;">${formatPrice(item.price * item.quantity)}</strong>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="summary-line">
+              <span>Subtotal</span>
+              <span>${formatPrice(summary.subtotal)}</span>
+            </div>
+
+            ${summary.discount > 0 ? `
+              <div class="summary-line" style="color: var(--accent);">
+                <span>Discount (${summary.promo?.code})</span>
+                <span>-${formatPrice(summary.discount)}</span>
+              </div>
+            ` : ''}
+
+            <div class="summary-line">
+              <span>Shipping</span>
+              <span>${summary.shipping === 0 ? '<span class="text-success font-weight-bold">FREE</span>' : formatPrice(summary.shipping)}</span>
+            </div>
+
+            <div class="summary-line">
+              <span>Estimated Tax (8%)</span>
+              <span>${formatPrice(summary.tax)}</span>
+            </div>
+
+            <div class="summary-line total-line">
+              <span>Grand Total</span>
+              <span>${formatPrice(summary.total)}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectPayment(method) {
+      selectedPaymentMethod = method;
+      document.getElementById('opt-card').classList.toggle('selected', method === 'card');
+      document.getElementById('opt-cod').classList.toggle('selected', method === 'cod');
+      document.getElementById('card-fields').style.display = method === 'card' ? 'block' : 'none';
+    }
+
+    async function handlePlaceOrder(e) {
+      e.preventDefault();
+      const placeBtn = document.getElementById('place-order-btn');
+      placeBtn.disabled = true;
+      placeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Order...';
+
+      const items = window.cartManager.getItems();
+      const summary = window.cartManager.getSummary();
+
+      const orderPayload = {
+        items: items.map(i => ({
+          productId: i.id,
+          name: i.name,
+          price: i.price,
+          quantity: i.quantity,
+          image: i.image
+        })),
+        shippingAddress: {
+          fullName: document.getElementById('full-name').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          phone: document.getElementById('phone').value.trim(),
+          address: document.getElementById('address').value.trim(),
+          city: document.getElementById('city').value.trim(),
+          state: document.getElementById('state').value.trim(),
+          zip: document.getElementById('zip').value.trim(),
+          country: document.getElementById('country').value
+        },
+        paymentMethod: selectedPaymentMethod,
+        subtotal: summary.subtotal,
+        discount: summary.discount,
+        shipping: summary.shipping,
+        tax: summary.tax,
+        total: summary.total
+      };
+
+      try {
+        const response = await api.createOrder(orderPayload);
+        const createdOrder = response.data;
+
+        // Clear shopping cart
+        window.cartManager.clearCart();
+        window.cartManager.removePromoCode();
+
+        // Show confirmation modal
+        document.getElementById('modal-order-id').textContent = createdOrder.id;
+        document.getElementById('modal-order-total').textContent = formatPrice(createdOrder.total);
+        const modal = document.getElementById('order-success-modal');
+        modal.style.display = 'flex';
+        modal.classList.add('open');
+      } catch (err) {
+        console.error('Order creation error:', err);
+        showToast(err.message || 'Failed to place order. Please try again.', 'error');
+        placeBtn.disabled = false;
+        placeBtn.innerHTML = `<i class="fas fa-lock"></i> Place Order (${formatPrice(summary.total)})`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initCheckout);
+  </script>
+</body>
+</html>

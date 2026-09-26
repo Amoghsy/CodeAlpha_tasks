@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account | NovaStore</title>
+  <meta name="description" content="Join NovaStore today to track purchases and enjoy exclusive member perks.">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="index.html" class="brand-logo">
+          <div class="logo-icon"><i class="fas fa-cube"></i></div>
+          <span>Nova<span class="accent">Store</span></span>
+        </a>
+
+        <div class="nav-actions">
+          <a href="index.html" class="nav-link-item"><i class="fas fa-store"></i> Shop</a>
+          <a href="login.html" class="btn btn-outline btn-sm">Already a Member?</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="auth-page-wrap">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h2>Create an Account</h2>
+        <p class="text-muted">Get started with faster checkout and real-time tracking</p>
+      </div>
+
+      <!-- Error Alert Box -->
+      <div id="register-error-alert" style="display: none; background: var(--danger-light); color: var(--danger); padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.88rem; margin-bottom: 1.25rem;">
+        <i class="fas fa-exclamation-circle"></i> <span id="register-error-message"></span>
+      </div>
+
+      <!-- Registration Form -->
+      <form id="register-form" onsubmit="handleRegisterSubmit(event)">
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user input-icon"></i>
+            <input type="text" id="reg-name" class="form-control" placeholder="Jane Doe" required autocomplete="name">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope input-icon"></i>
+            <input type="email" id="reg-email" class="form-control" placeholder="jane.doe@example.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password</label>
+          <div class="input-with-icon" style="position: relative;">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" id="reg-password" class="form-control" placeholder="At least 6 characters" required autocomplete="new-password">
+            <button type="button" onclick="togglePasswordVisibility('reg-password', this)" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-light); cursor: pointer;" aria-label="Toggle password visibility">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-confirm-password">Confirm Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-shield-alt input-icon"></i>
+            <input type="password" id="reg-confirm-password" class="form-control" placeholder="Re-type password" required autocomplete="new-password">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+          <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" id="terms-agree" required style="margin-top: 0.2rem;">
+            <span>I agree to the <a href="#" style="color: var(--primary);">Terms of Service</a> & <a href="#" style="color: var(--primary);">Privacy Policy</a></span>
+          </label>
+        </div>
+
+        <button type="submit" id="register-submit-btn" class="btn btn-primary btn-block btn-lg">
+          Create My Account
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? <a href="login.html" style="color: var(--primary); font-weight: 600;">Sign in here</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top: none;">
+        <span>&copy; 2026 NovaStore Inc. All rights reserved.</span>
+        <a href="index.html" class="text-primary"><i class="fas fa-arrow-left"></i> Return to Store</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/constants.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/main.js"></script>
+
+  <script>
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+      }
+    }
+
+    function showError(msg) {
+      const alert = document.getElementById('register-error-alert');
+      const text = document.getElementById('register-error-message');
+      text.textContent = msg;
+      alert.style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('register-error-alert').style.display = 'none';
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      hideError();
+
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters long.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showError('Passwords do not match. Please verify and try again.');
+        return;
+      }
+
+      const btn = document.getElementById('register-submit-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+
+      try {
+        await auth.register(name, email, password);
+        showToast('Account successfully created! Welcome aboard.', 'success');
+
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 800);
+      } catch (err) {
+        console.error('Registration error:', err);
+        showError(err.message || 'Registration failed. Please try a different email.');
+        btn.disabled = false;
+        btn.innerHTML = 'Create My Account';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (auth.isAuthenticated()) {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>
