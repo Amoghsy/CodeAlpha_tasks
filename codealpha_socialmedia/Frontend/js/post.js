@@ -52,11 +52,14 @@ const PostDetail = {
 
   renderPost(container) {
     const post = this.post;
-    const author = post.user || post.author || {
-      username: 'vibesta_user',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
-    };
-    const authorAvatar = author.avatar_url || author.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
+    const author = post.user || post.author || {};
+    const authorUsername = author.username || 'vibesta_user';
+    const currentUser = Auth.getUser();
+    const isCurrentUser = currentUser && authorUsername && (currentUser.username.toLowerCase() === authorUsername.toLowerCase());
+
+    const authorAvatar = (isCurrentUser && (currentUser.avatar_url || currentUser.avatar))
+      ? (currentUser.avatar_url || currentUser.avatar)
+      : (author.avatar_url || author.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(authorUsername)}`);
     const authorName = author.full_name || author.name || '';
     const postImage = post.image_url || post.image || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80';
     const isLiked = post.is_liked !== undefined ? post.is_liked : !!post.isLiked;

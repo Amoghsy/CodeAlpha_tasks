@@ -224,8 +224,10 @@ class ApiClient {
           id: 'user_1',
           username: 'vibesta_creator',
           name: 'Amogh | Vibesta',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+          avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
         };
+
+        const currentAvatar = currentUser.avatar_url || currentUser.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(currentUser.username)}`;
 
         const newPost = {
           id: 'post_' + Date.now(),
@@ -233,8 +235,9 @@ class ApiClient {
           author: {
             id: currentUser.id,
             username: currentUser.username,
-            name: currentUser.name,
-            avatar: currentUser.avatar
+            name: currentUser.name || currentUser.full_name,
+            avatar: currentAvatar,
+            avatar_url: currentAvatar
           },
           image: newPostData.image,
           caption: newPostData.caption || '',

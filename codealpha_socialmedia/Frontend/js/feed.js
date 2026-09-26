@@ -23,8 +23,9 @@ const Feed = {
     const currentUser = Auth.getUser() || {
       id: 'user_1',
       username: 'vibesta_creator',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
     };
+    const myAvatar = currentUser.avatar_url || currentUser.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(currentUser.username || 'user')}`;
 
     const myStory = stories.find(s => s.userId === currentUser.id);
     const hasMyStory = myStory && myStory.items && myStory.items.length > 0;
@@ -35,7 +36,7 @@ const Feed = {
       <div class="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer group" id="my-story-bubble">
         <div class="relative p-0.5 rounded-full ${hasMyStory ? (isMyStoryViewed ? 'story-ring-viewed' : 'story-ring-gradient') : 'border border-dashed border-zinc-300'} group-hover:scale-105 transition-transform duration-200">
           <div class="p-0.5 bg-white rounded-full">
-            <img src="${currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}" class="w-14 h-14 rounded-full object-cover">
+            <img src="${myAvatar}" class="w-14 h-14 rounded-full object-cover">
           </div>
           <button id="add-story-plus-btn" class="absolute bottom-0 right-0 w-4 h-4 rounded-full brand-gradient-bg text-white flex items-center justify-center text-xs font-extrabold ring-2 ring-white hover:scale-110 transition-transform" title="Add to story">+</button>
         </div>
@@ -93,8 +94,9 @@ const Feed = {
     const currentUser = Auth.getUser() || {
       username: 'vibesta_creator',
       name: 'Amogh | Vibesta',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
     };
+    const userAvatar = currentUser.avatar_url || currentUser.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(currentUser.username || 'user')}`;
 
     const users = JSON.parse(localStorage.getItem(CONFIG.MOCK_USERS_KEY) || '[]');
     const suggestions = users.filter(u => u.username !== currentUser.username).slice(0, 4);
@@ -103,10 +105,10 @@ const Feed = {
       <!-- Current User Profile Pill -->
       <div class="flex items-center justify-between mb-6">
         <a href="profile.html?username=${encodeURIComponent(currentUser.username)}" class="flex items-center gap-3 group">
-          <img src="${currentUser.avatar}" class="w-12 h-12 rounded-full object-cover border border-zinc-200 group-hover:opacity-90">
+          <img src="${userAvatar}" class="w-12 h-12 rounded-full object-cover border border-zinc-200 group-hover:opacity-90">
           <div>
             <h4 class="text-sm font-bold text-zinc-900 group-hover:underline">${currentUser.username}</h4>
-            <p class="text-xs text-zinc-500 truncate max-w-[140px]">${currentUser.name || 'Vibesta User'}</p>
+            <p class="text-xs text-zinc-500 truncate max-w-[140px]">${currentUser.name || currentUser.full_name || 'Vibesta User'}</p>
           </div>
         </a>
         <a href="edit-profile.html" class="text-xs font-semibold text-blue-600 hover:text-blue-700">Switch</a>
@@ -236,12 +238,15 @@ const Feed = {
   },
 
   createPostCardHTML(post) {
-    const author = post.user || post.author || {
-      username: 'creator',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
-    };
+    const author = post.user || post.author || {};
+    const authorUsername = author.username || 'user';
+    const currentUser = Auth.getUser();
+    const isCurrentUser = currentUser && authorUsername && (currentUser.username.toLowerCase() === authorUsername.toLowerCase());
 
-    const authorAvatar = author.avatar_url || author.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
+    const authorAvatar = (isCurrentUser && (currentUser.avatar_url || currentUser.avatar))
+      ? (currentUser.avatar_url || currentUser.avatar)
+      : (author.avatar_url || author.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(authorUsername)}`);
+
     const postImage = post.image_url || post.image || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80';
     const isLiked = post.is_liked !== undefined ? post.is_liked : !!post.isLiked;
     const likesCount = post.likes_count !== undefined ? post.likes_count : (post.likesCount || 0);
@@ -255,12 +260,12 @@ const Feed = {
         
         <!-- Post Header -->
         <header class="flex items-center justify-between px-4 py-3">
-          <a href="profile.html?username=${encodeURIComponent(author.username)}" class="flex items-center gap-3 group">
+          <a href="profile.html?username=${encodeURIComponent(authorUsername)}" class="flex items-center gap-3 group">
             <div class="p-0.5 rounded-full story-ring-gradient">
-              <img src="${authorAvatar}" alt="${author.username}" class="w-8 h-8 rounded-full object-cover border border-white">
+              <img src="${authorAvatar}" alt="${authorUsername}" class="w-8 h-8 rounded-full object-cover border border-white">
             </div>
             <div>
-              <span class="text-sm font-bold text-zinc-900 group-hover:underline">${author.username}</span>
+              <span class="text-sm font-bold text-zinc-900 group-hover:underline">${authorUsername}</span>
               <span class="text-[11px] text-zinc-400 block">${formattedDate}</span>
             </div>
           </a>

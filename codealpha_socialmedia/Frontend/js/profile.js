@@ -53,8 +53,11 @@ const Profile = {
     const postCount = counts.posts !== undefined ? counts.posts : (this.posts.length || u.postsCount || 0);
     const followers = counts.followers !== undefined ? counts.followers : (u.followersCount || 0);
     const following = counts.following !== undefined ? counts.following : (u.followingCount || 0);
-    const isFollowing = u.is_following !== undefined ? u.is_following : !!u.isFollowing;
-    const avatarUrl = u.avatar_url || u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
+    const currentUser = Auth.getUser();
+    const isCurrentUser = currentUser && u.username && (currentUser.username.toLowerCase() === u.username.toLowerCase());
+    const avatarUrl = (isCurrentUser && (currentUser.avatar_url || currentUser.avatar))
+      ? (currentUser.avatar_url || currentUser.avatar)
+      : (u.avatar_url || u.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(u.username || 'user')}`);
     const displayName = u.full_name || u.name || u.username;
 
     const stories = (typeof api !== 'undefined' && api.getStoredStories) ? api.getStoredStories() : [];

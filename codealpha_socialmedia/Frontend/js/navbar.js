@@ -3,9 +3,9 @@
 const Navbar = {
   render() {
     const user = Auth.getUser() || {
-      username: 'guest',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+      username: 'guest'
     };
+    const userAvatar = user.avatar_url || user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.username || 'guest')}`;
 
     const currentPath = window.location.pathname;
     const isHome = currentPath.endsWith('index.html') || currentPath.endsWith('/');
@@ -63,7 +63,7 @@ const Navbar = {
               <!-- Profile Avatar -->
               <a href="profile.html?username=${encodeURIComponent(user.username || '')}" class="relative p-0.5 rounded-full ${isProfile ? 'ring-2 ring-zinc-800' : 'hover:opacity-80'} transition-all" title="Profile">
                 <img 
-                  src="${user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}" 
+                  src="${userAvatar}" 
                   alt="${user.username}" 
                   class="w-7 h-7 rounded-full object-cover border border-zinc-200"
                 />
@@ -103,7 +103,7 @@ const Navbar = {
               </svg>
             </a>
             <a href="profile.html?username=${encodeURIComponent(user.username || '')}" class="p-1">
-              <img src="${user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}" class="w-6 h-6 rounded-full object-cover border ${isProfile ? 'ring-2 ring-zinc-900' : ''}">
+              <img src="${userAvatar}" class="w-6 h-6 rounded-full object-cover border ${isProfile ? 'ring-2 ring-zinc-900' : ''}">
             </a>
           </div>
         </div>

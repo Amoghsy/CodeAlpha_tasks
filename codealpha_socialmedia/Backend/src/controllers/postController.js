@@ -118,17 +118,22 @@ const getFeed = async (req, res, next) => {
 
     const followedIds = (followingData || []).map((f) => f.following_id);
     const feedUserIds = [currentUserId, ...followedIds];
+    const isDiscoverMode = followedIds.length === 0;
 
     // Fetch total count for pagination
-    const { count: totalPosts, error: countErr } = await supabase
+    let countQuery = supabase
       .from('posts')
-      .select('*', { count: 'exact', head: true })
-      .in('user_id', feedUserIds);
+      .select('*', { count: 'exact', head: true });
 
+    if (!isDiscoverMode) {
+      countQuery = countQuery.in('user_id', feedUserIds);
+    }
+
+    const { count: totalPosts, error: countErr } = await countQuery;
     if (countErr) return next(countErr);
 
     // Fetch posts
-    const { data: posts, error: postsErr } = await supabase
+    let postsQuery = supabase
       .from('posts')
       .select(`
         id,
@@ -143,10 +148,14 @@ const getFeed = async (req, res, next) => {
           avatar_url
         )
       `)
-      .in('user_id', feedUserIds)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
+    if (!isDiscoverMode) {
+      postsQuery = postsQuery.in('user_id', feedUserIds);
+    }
+
+    const { data: posts, error: postsErr } = await postsQuery;
     if (postsErr) return next(postsErr);
 
     const enrichedPosts = await enrichPostData(posts, currentUserId);
