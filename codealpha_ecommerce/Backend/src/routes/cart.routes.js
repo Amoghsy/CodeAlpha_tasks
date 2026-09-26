@@ -4,7 +4,10 @@ const cartController = require('../controllers/cart.controller');
 const { authenticate } = require('../middleware/auth.middleware');
 const { validate } = require('../middleware/validate.middleware');
 
-// All cart routes require authentication
+// Public/Guest calculation endpoint (Backend business logic)
+router.post('/calculate', cartController.calculateCart);
+
+// Protected routes for persistent user cart
 router.use(authenticate);
 
 router.get('/', cartController.getCart);

@@ -55,8 +55,8 @@ async function createOrder(req, res, next) {
       calculatedSubtotal += Number(product.price) * item.quantity;
     }
 
-    // 3. Calculate taxes and shipping
-    const shipping = calculatedSubtotal >= 50 ? 0 : 5.00;
+    // 3. Calculate taxes and shipping (INR)
+    const shipping = calculatedSubtotal >= 999 ? 0 : 99.00;
     const tax = calculatedSubtotal * 0.08;
     const totalAmount = Number((calculatedSubtotal + shipping + tax).toFixed(2));
 

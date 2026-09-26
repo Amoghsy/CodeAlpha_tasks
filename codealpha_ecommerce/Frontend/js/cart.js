@@ -1,9 +1,20 @@
 /**
- * Cart Manager: LocalStorage persistence, calculations, promo codes, and backend synchronization
+ * Cart Manager: LocalStorage persistence, event dispatching, and Backend-calculated summaries
  */
 const cartManager = (function () {
+  let cachedSummary = {
+    subtotal: 0,
+    discount: 0,
+    promo: null,
+    shipping: 0,
+    tax: 0,
+    total: 0,
+    itemCount: 0,
+    freeShippingThresholdRemaining: 0
+  };
+
   /**
-   * Internal get raw items
+   * Get raw items from storage
    */
   function getItems() {
     try {
@@ -16,11 +27,12 @@ const cartManager = (function () {
   }
 
   /**
-   * Internal save items and notify listeners
+   * Save items and refresh backend summary
    */
-  function saveItems(items) {
+  async function saveItems(items) {
     localStorage.setItem(CONFIG.STORAGE_KEYS.CART, JSON.stringify(items));
-    window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { items, count: getItemsCount() } }));
+    await refreshSummary();
+    window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { items, count: getItemsCount(), summary: cachedSummary } }));
     syncWithBackend();
   }
 
@@ -33,7 +45,7 @@ const cartManager = (function () {
         const items = getItems();
         await api.syncCart(items);
       } catch (err) {
-        console.warn('Backend cart sync failed, relying on local cart:', err.message);
+        console.warn('Backend cart sync failed, using local store:', err.message);
       }
     }
   }
@@ -47,7 +59,7 @@ const cartManager = (function () {
     const existingIndex = items.findIndex(item => item.id === product.id);
 
     if (existingIndex > -1) {
-      const maxStock = typeof product.stock === 'number' ? product.stock : 999;
+      const maxStock = typeof product.stock === 'number' ? product.stock : (product.stock_quantity || 999);
       const newQty = items[existingIndex].quantity + qtyToAdd;
       
       if (newQty > maxStock) {
@@ -64,9 +76,9 @@ const cartManager = (function () {
         id: product.id,
         name: product.name,
         price: Number(product.price),
-        image: product.image,
+        image: product.image || product.image_url,
         category: product.category,
-        stock: product.stock,
+        stock: product.stock || product.stock_quantity,
         quantity: qtyToAdd
       });
     }
@@ -125,79 +137,64 @@ const cartManager = (function () {
   }
 
   /**
-   * Subtotal
-   */
-  function getSubtotal() {
-    const items = getItems();
-    return items.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
-  }
-
-  /**
-   * Get active applied promo
+   * Get active applied promo code
    */
   function getActivePromo() {
-    const code = localStorage.getItem(CONFIG.STORAGE_KEYS.PROMO_CODE);
-    if (!code) return null;
-    const details = CONFIG.PROMO_CODES[code.toUpperCase()];
-    return details ? { code: code.toUpperCase(), ...details } : null;
+    return localStorage.getItem(CONFIG.STORAGE_KEYS.PROMO_CODE);
   }
 
   /**
    * Apply promo code
    */
-  function applyPromoCode(code) {
+  async function applyPromoCode(code) {
     const cleanCode = (code || '').trim().toUpperCase();
-    if (!CONFIG.PROMO_CODES[cleanCode]) {
-      return { success: false, message: 'Invalid promo code. Try SAVE10 or FREESHIP' };
-    }
     localStorage.setItem(CONFIG.STORAGE_KEYS.PROMO_CODE, cleanCode);
-    window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { items: getItems(), count: getItemsCount() } }));
-    return { success: true, promo: CONFIG.PROMO_CODES[cleanCode] };
+    const summary = await refreshSummary();
+
+    if (summary.promo) {
+      window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { items: getItems(), count: getItemsCount(), summary } }));
+      return { success: true, promo: summary.promo };
+    } else {
+      localStorage.removeItem(CONFIG.STORAGE_KEYS.PROMO_CODE);
+      await refreshSummary();
+      return { success: false, message: 'Invalid or expired promo code.' };
+    }
   }
 
   /**
    * Remove promo code
    */
-  function removePromoCode() {
+  async function removePromoCode() {
     localStorage.removeItem(CONFIG.STORAGE_KEYS.PROMO_CODE);
-    window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { items: getItems(), count: getItemsCount() } }));
+    await refreshSummary();
+    window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { items: getItems(), count: getItemsCount(), summary: cachedSummary } }));
   }
 
   /**
-   * Calculate full breakdown
+   * Delegate pricing calculations to backend API / fallback
+   */
+  async function refreshSummary() {
+    const items = getItems();
+    const promoCode = getActivePromo();
+    try {
+      const res = await api.calculateCart({ items, promoCode });
+      cachedSummary = res.data;
+      return cachedSummary;
+    } catch (e) {
+      console.warn('Could not refresh cart summary from backend:', e);
+      return cachedSummary;
+    }
+  }
+
+  /**
+   * Return cached summary
    */
   function getSummary() {
-    const subtotal = getSubtotal();
-    const promo = getActivePromo();
-    
-    let discount = 0;
-    let isFreeShipping = subtotal >= CONFIG.SHIPPING.FREE_THRESHOLD || subtotal === 0;
-
-    if (promo) {
-      if (promo.discount) {
-        discount = subtotal * promo.discount;
-      }
-      if (promo.freeShipping) {
-        isFreeShipping = true;
-      }
-    }
-
-    const discountedSubtotal = Math.max(0, subtotal - discount);
-    const shipping = (subtotal === 0 || isFreeShipping) ? 0 : CONFIG.SHIPPING.FLAT_RATE;
-    const tax = discountedSubtotal * CONFIG.TAX_RATE;
-    const total = discountedSubtotal + shipping + tax;
-
-    return {
-      subtotal,
-      discount,
-      promo,
-      shipping,
-      tax,
-      total,
-      itemCount: getItemsCount(),
-      freeShippingThresholdRemaining: Math.max(0, CONFIG.SHIPPING.FREE_THRESHOLD - subtotal)
-    };
+    return cachedSummary;
   }
+
+  // Initial load
+  refreshSummary();
 
   return {
     getItems,
@@ -206,10 +203,10 @@ const cartManager = (function () {
     removeItem,
     clearCart,
     getItemsCount,
-    getSubtotal,
     getActivePromo,
     applyPromoCode,
     removePromoCode,
+    refreshSummary,
     getSummary,
     syncWithBackend
   };

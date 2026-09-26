@@ -16,7 +16,7 @@ const api = (function () {
       return cachedMockData;
     } catch (err) {
       console.warn('Mock data fetch error:', err);
-      return { products: [], categories: [], mockOrders: [] };
+      return { products: [], categories: [], mockOrders: [], storeConfig: {} };
     }
   }
 
@@ -50,30 +50,27 @@ const api = (function () {
         return await response.json();
       }
 
-      // If backend returns a clear error status (like 400 or 401), parse backend error message
       let errorData;
       try {
         errorData = await response.json();
       } catch (e) {
-        errorData = { message: `Request failed with status ${response.status}` };
+        errorData = { error: `Request failed with status ${response.status}` };
       }
 
-      // If it's a 404 or 500 series error and we have a fallback handler, fallback
       if ((response.status >= 500 || response.status === 404) && fallbackHandler) {
-        console.info(`Backend endpoint ${endpoint} returned ${response.status}. Using mock fallback.`);
+        console.info(`Backend endpoint ${endpoint} returned ${response.status}. Using fallback.`);
         return await fallbackHandler();
       }
 
-      const error = new Error(errorData.message || `HTTP Error ${response.status}`);
+      const error = new Error(errorData.error || errorData.message || `HTTP Error ${response.status}`);
       error.status = response.status;
       error.data = errorData;
       throw error;
     } catch (err) {
       clearTimeout(timeoutId);
 
-      // If fetch failed due to network error, timeout, or backend not running
       if (fallbackHandler) {
-        console.info(`Backend unavailable at ${url} (${err.message}). Using mock fallback.`);
+        console.info(`Backend unavailable at ${url} (${err.message}). Using fallback data.`);
         return await fallbackHandler();
       }
       throw err;
@@ -111,7 +108,7 @@ const api = (function () {
         if (params.sort) {
           if (params.sort === 'price-asc') list.sort((a, b) => a.price - b.price);
           else if (params.sort === 'price-desc') list.sort((a, b) => b.price - a.price);
-          else if (params.sort === 'rating') list.sort((a, b) => b.rating - a.rating);
+          else if (params.sort === 'rating') list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
           else if (params.sort === 'name-asc') list.sort((a, b) => a.name.localeCompare(b.name));
         }
 
@@ -146,19 +143,64 @@ const api = (function () {
         const mock = await getMockData();
         const product = (mock.products || []).find(p => p.id === numId || String(p.id) === String(id));
         if (!product) {
-          throw new Error(`Product with ID ${id} not found.`);
+          throw new Error(`Product with ID "${id}" not found.`);
         }
         return { data: product };
       });
     },
 
     /**
-     * Get all categories
+     * Get all categories from backend or fallback
      */
     async getCategories() {
-      return request('/categories', { method: 'GET' }, async () => {
+      return request('/products/categories', { method: 'GET' }, async () => {
         const mock = await getMockData();
         return { data: mock.categories || [] };
+      });
+    },
+
+    /**
+     * Request backend to calculate cart totals, tax, shipping, and promotional discounts
+     */
+    async calculateCart(payload) {
+      return request('/cart/calculate', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      }, async () => {
+        const mock = await getMockData();
+        const config = mock.storeConfig || {};
+        const items = payload.items || [];
+        const promoCode = (payload.promoCode || '').trim().toUpperCase();
+
+        const subtotal = items.reduce((sum, item) => sum + (Number(item.price || 0) * (item.quantity || 1)), 0);
+        const promos = config.promos || {};
+        const promo = promos[promoCode] || null;
+
+        let discount = 0;
+        let isFreeShipping = subtotal >= (config.shipping?.freeThreshold || 999) || subtotal === 0;
+
+        if (promo) {
+          if (promo.discount) discount = subtotal * promo.discount;
+          if (promo.freeShipping) isFreeShipping = true;
+        }
+
+        const discountedSubtotal = Math.max(0, subtotal - discount);
+        const shipping = (subtotal === 0 || isFreeShipping) ? 0 : (config.shipping?.flatRate || 99);
+        const tax = discountedSubtotal * (config.taxRate || 0.08);
+        const total = discountedSubtotal + shipping + tax;
+
+        return {
+          data: {
+            subtotal: Number(subtotal.toFixed(2)),
+            discount: Number(discount.toFixed(2)),
+            promo: promo ? { code: promoCode, ...promo } : null,
+            shipping: Number(shipping.toFixed(2)),
+            tax: Number(tax.toFixed(2)),
+            total: Number(total.toFixed(2)),
+            itemCount: items.reduce((sum, i) => sum + (i.quantity || 1), 0),
+            freeShippingThresholdRemaining: Math.max(0, (config.shipping?.freeThreshold || 999) - subtotal)
+          }
+        };
       });
     },
 
@@ -170,14 +212,9 @@ const api = (function () {
         method: 'POST',
         body: JSON.stringify(credentials)
       }, async () => {
-        // Fallback demo login
         const { email, password } = credentials;
-        if (!email || !password) {
-          throw new Error('Please enter both email and password.');
-        }
-        if (password.length < 4) {
-          throw new Error('Invalid credentials. Password is too short.');
-        }
+        if (!email || !password) throw new Error('Please enter both email and password.');
+        if (password.length < 4) throw new Error('Invalid credentials.');
 
         const mock = await getMockData();
         const demoUser = mock.mockUser || {
@@ -207,9 +244,7 @@ const api = (function () {
         body: JSON.stringify(userData)
       }, async () => {
         const { name, email, password } = userData;
-        if (!name || !email || !password) {
-          throw new Error('Please fill in all required fields.');
-        }
+        if (!name || !email || !password) throw new Error('Please fill in all required fields.');
         const token = 'mock_jwt_token_new_' + Date.now();
         return {
           token,
@@ -261,7 +296,6 @@ const api = (function () {
           ...orderPayload
         };
 
-        // Save into local orders storage
         const rawOrders = localStorage.getItem(CONFIG.STORAGE_KEYS.ORDERS);
         const existing = rawOrders ? JSON.parse(rawOrders) : [];
         existing.unshift(newOrder);
@@ -279,11 +313,8 @@ const api = (function () {
         const mock = await getMockData();
         const rawOrders = localStorage.getItem(CONFIG.STORAGE_KEYS.ORDERS);
         const localOrders = rawOrders ? JSON.parse(rawOrders) : [];
-        
-        // Merge mock orders with local placed orders
         const mockOrders = mock.mockOrders || [];
-        const merged = [...localOrders, ...mockOrders];
-        return { data: merged };
+        return { data: [...localOrders, ...mockOrders] };
       });
     }
   };

@@ -2,11 +2,12 @@
  * Main application initializer: Shared layout, navbar, toasts, and helper utilities
  */
 
-// Global Currency Formatter
+// Global Currency Formatter (Indian Rupees)
 function formatPrice(amount) {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'INR',
+    maximumFractionDigits: 2
   }).format(amount || 0);
 }
 

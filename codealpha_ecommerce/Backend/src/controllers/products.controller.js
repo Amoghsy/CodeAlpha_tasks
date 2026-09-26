@@ -75,6 +75,46 @@ async function getProducts(req, res, next) {
 }
 
 /**
+ * Get distinct categories from backend
+ */
+async function getCategories(req, res, next) {
+  try {
+    const { data: products, error } = await supabase
+      .from('products')
+      .select('category');
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    const categoryIcons = {
+      'all': 'fa-th-large',
+      'electronics': 'fa-laptop',
+      'audio': 'fa-headphones',
+      'wearables': 'fa-clock',
+      'accessories': 'fa-gem',
+      'gaming': 'fa-gamepad'
+    };
+
+    const uniqueCategories = Array.from(new Set((products || []).map(p => p.category.toLowerCase())));
+    const result = [
+      { id: 'all', name: 'All Products', icon: 'fa-th-large' },
+      ...uniqueCategories.map(cat => ({
+        id: cat,
+        name: cat.charAt(0).toUpperCase() + cat.slice(1),
+        icon: categoryIcons[cat] || 'fa-tag'
+      }))
+    ];
+
+    return res.status(200).json({
+      data: result
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
  * Get product details by ID
  */
 async function getProductById(req, res, next) {
@@ -101,6 +141,7 @@ async function getProductById(req, res, next) {
 
 module.exports = {
   getProducts,
+  getCategories,
   getProductById,
   getProductsQuerySchema
 };

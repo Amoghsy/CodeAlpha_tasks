@@ -61,7 +61,7 @@
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
           <span class="text-muted">Total Paid:</span>
-          <strong id="modal-order-total" class="text-primary">$0.00</strong>
+          <strong id="modal-order-total" class="text-primary">₹0.00</strong>
         </div>
       </div>
 
@@ -92,7 +92,7 @@
   <script>
     let selectedPaymentMethod = 'card';
 
-    function initCheckout() {
+    async function initCheckout() {
       const items = window.cartManager.getItems();
       const container = document.getElementById('checkout-view-container');
 
@@ -108,7 +108,7 @@
         return;
       }
 
-      const summary = window.cartManager.getSummary();
+      const summary = await window.cartManager.refreshSummary();
       const currentUser = window.auth ? window.auth.getUser() : null;
 
       container.innerHTML = `

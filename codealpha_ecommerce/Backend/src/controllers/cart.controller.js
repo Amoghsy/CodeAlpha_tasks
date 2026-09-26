@@ -1,6 +1,20 @@
 const { supabase } = require('../config/supabaseClient');
 const { z } = require('zod');
 
+// Store Pricing & Promotion Configuration (Backend Source of Truth)
+const STORE_RULES = {
+  SHIPPING: {
+    FREE_THRESHOLD: 999.00,
+    FLAT_RATE: 99.00
+  },
+  TAX_RATE: 0.08, // 8% sales tax
+  PROMO_CODES: {
+    'SAVE10': { discount: 0.10, label: '10% Off' },
+    'ALPHA20': { discount: 0.20, label: '20% Off' },
+    'FREESHIP': { freeShipping: true, label: 'Free Shipping' }
+  }
+};
+
 // Validation Schemas
 const addToCartSchema = z.object({
   body: z.object({
@@ -17,6 +31,58 @@ const updateCartSchema = z.object({
     quantity: z.number().int().min(0, 'Quantity cannot be negative')
   })
 });
+
+/**
+ * Calculate cart breakdown, totals, discounts and shipping (Backend Business Logic)
+ */
+function calculateSummary(items = [], promoCode = '') {
+  const itemCount = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  const subtotal = items.reduce((sum, item) => sum + (Number(item.price || 0) * (item.quantity || 1)), 0);
+
+  const cleanPromo = (promoCode || '').trim().toUpperCase();
+  const promo = STORE_RULES.PROMO_CODES[cleanPromo] || null;
+
+  let discount = 0;
+  let isFreeShipping = subtotal >= STORE_RULES.SHIPPING.FREE_THRESHOLD || subtotal === 0;
+
+  if (promo) {
+    if (promo.discount) {
+      discount = subtotal * promo.discount;
+    }
+    if (promo.freeShipping) {
+      isFreeShipping = true;
+    }
+  }
+
+  const discountedSubtotal = Math.max(0, subtotal - discount);
+  const shipping = (subtotal === 0 || isFreeShipping) ? 0 : STORE_RULES.SHIPPING.FLAT_RATE;
+  const tax = discountedSubtotal * STORE_RULES.TAX_RATE;
+  const total = discountedSubtotal + shipping + tax;
+
+  return {
+    subtotal: Number(subtotal.toFixed(2)),
+    discount: Number(discount.toFixed(2)),
+    promo: promo ? { code: cleanPromo, ...promo } : null,
+    shipping: Number(shipping.toFixed(2)),
+    tax: Number(tax.toFixed(2)),
+    total: Number(total.toFixed(2)),
+    itemCount,
+    freeShippingThresholdRemaining: Math.max(0, STORE_RULES.SHIPPING.FREE_THRESHOLD - subtotal)
+  };
+}
+
+/**
+ * Public/Protected endpoint to calculate cart summary
+ */
+async function calculateCart(req, res, next) {
+  try {
+    const { items = [], promoCode = '' } = req.body;
+    const summary = calculateSummary(items, promoCode);
+    return res.status(200).json({ data: summary });
+  } catch (err) {
+    next(err);
+  }
+}
 
 /**
  * Get current user's cart with product details joined
@@ -59,8 +125,11 @@ async function getCart(req, res, next) {
       quantity: item.quantity
     }));
 
+    const summary = calculateSummary(formatted);
+
     return res.status(200).json({
-      data: formatted
+      data: formatted,
+      summary
     });
   } catch (err) {
     next(err);
@@ -152,7 +221,6 @@ async function updateCartItem(req, res, next) {
     const { quantity } = req.body;
 
     if (quantity === 0) {
-      // Remove item if quantity is zero
       const { error: delError } = await supabase
         .from('cart_items')
         .delete()
@@ -163,7 +231,6 @@ async function updateCartItem(req, res, next) {
       return res.status(200).json({ message: 'Item removed from cart' });
     }
 
-    // Check item and stock
     const { data: cartItem, error: fetchError } = await supabase
       .from('cart_items')
       .select('id, product_id, products (stock_quantity)')
@@ -256,6 +323,7 @@ async function syncCart(req, res, next) {
 }
 
 module.exports = {
+  calculateCart,
   getCart,
   addToCart,
   updateCartItem,

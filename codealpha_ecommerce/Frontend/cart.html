@@ -88,10 +88,10 @@
   <script src="js/main.js"></script>
 
   <script>
-    function renderCartPage() {
+    async function renderCartPage() {
       const container = document.getElementById('cart-view-container');
       const items = window.cartManager.getItems();
-      const summary = window.cartManager.getSummary();
+      const summary = await window.cartManager.refreshSummary();
       const countEl = document.getElementById('cart-item-count-text');
 
       if (countEl) {
@@ -259,13 +259,13 @@
       }
     }
 
-    function handleApplyPromo(e) {
+    async function handleApplyPromo(e) {
       e.preventDefault();
       const input = document.getElementById('promo-code-input');
       const code = input ? input.value.trim() : '';
       if (!code) return;
 
-      const res = window.cartManager.applyPromoCode(code);
+      const res = await window.cartManager.applyPromoCode(code);
       if (res.success) {
         showToast(`Promo code "${code.toUpperCase()}" applied!`, 'success');
       } else {
@@ -274,8 +274,8 @@
       renderCartPage();
     }
 
-    function removePromo() {
-      window.cartManager.removePromoCode();
+    async function removePromo() {
+      await window.cartManager.removePromoCode();
       showToast('Promo code removed', 'info');
       renderCartPage();
     }

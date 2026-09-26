@@ -1,4 +1,16 @@
 {
+  "storeConfig": {
+    "shipping": {
+      "freeThreshold": 999.00,
+      "flatRate": 99.00
+    },
+    "taxRate": 0.08,
+    "promos": {
+      "SAVE10": { "discount": 0.10, "label": "10% Off" },
+      "ALPHA20": { "discount": 0.20, "label": "20% Off" },
+      "FREESHIP": { "freeShipping": true, "label": "Free Shipping" }
+    }
+  },
   "categories": [
     { "id": "all", "name": "All Products", "icon": "fa-th-large" },
     { "id": "electronics", "name": "Electronics", "icon": "fa-laptop" },
@@ -13,11 +25,11 @@
       "name": "NovaPulse Wireless Noise-Cancelling Headphones",
       "slug": "novapulse-wireless-headphones",
       "category": "audio",
-      "price": 249.99,
-      "originalPrice": 299.99,
+      "price": 4999.00,
+      "originalPrice": 6499.00,
       "rating": 4.8,
       "reviewsCount": 128,
-      "stock": 15,
+      "stock": 25,
       "badge": "Best Seller",
       "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80",
       "gallery": [
@@ -39,11 +51,11 @@
       "name": "AeroTitan Ultra Smartwatch Series X",
       "slug": "aerotitan-smartwatch-series-x",
       "category": "wearables",
-      "price": 319.50,
-      "originalPrice": 379.00,
+      "price": 6499.00,
+      "originalPrice": 7999.00,
       "rating": 4.9,
       "reviewsCount": 94,
-      "stock": 8,
+      "stock": 18,
       "badge": "Hot Deal",
       "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
       "gallery": [
@@ -65,11 +77,11 @@
       "name": "LuminaView 4K Creator Ultra-Wide Monitor 34\"",
       "slug": "luminaview-4k-ultrawide-monitor",
       "category": "electronics",
-      "price": 649.00,
-      "originalPrice": 749.00,
+      "price": 28999.00,
+      "originalPrice": 34999.00,
       "rating": 4.7,
       "reviewsCount": 67,
-      "stock": 5,
+      "stock": 10,
       "badge": "Editor's Choice",
       "image": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=80",
       "gallery": [
@@ -90,11 +102,11 @@
       "name": "HyperGlide Pro Wireless Mechanical Keyboard",
       "slug": "hyperglide-pro-keyboard",
       "category": "gaming",
-      "price": 139.99,
-      "originalPrice": 169.99,
+      "price": 3499.00,
+      "originalPrice": 4299.00,
       "rating": 4.6,
       "reviewsCount": 112,
-      "stock": 20,
+      "stock": 30,
       "badge": "Popular",
       "image": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80",
       "gallery": [
@@ -115,11 +127,11 @@
       "name": "Vortex Stealth RGB Gaming Mouse",
       "slug": "vortex-stealth-gaming-mouse",
       "category": "gaming",
-      "price": 79.99,
-      "originalPrice": 99.99,
+      "price": 1899.00,
+      "originalPrice": 2499.00,
       "rating": 4.5,
       "reviewsCount": 86,
-      "stock": 25,
+      "stock": 40,
       "badge": "",
       "image": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80",
       "gallery": [
@@ -139,11 +151,11 @@
       "name": "Zenith Leather Minimalist MagSafe Wallet",
       "slug": "zenith-leather-magsafe-wallet",
       "category": "accessories",
-      "price": 45.00,
-      "originalPrice": 55.00,
+      "price": 999.00,
+      "originalPrice": 1499.00,
       "rating": 4.4,
       "reviewsCount": 53,
-      "stock": 30,
+      "stock": 50,
       "badge": "New",
       "image": "https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80",
       "gallery": [
@@ -163,8 +175,8 @@
       "name": "OmniCharge 100W GaN Fast Charger & Hub",
       "slug": "omnicharge-100w-gan-charger",
       "category": "accessories",
-      "price": 69.99,
-      "originalPrice": 85.00,
+      "price": 1999.00,
+      "originalPrice": 2499.00,
       "rating": 4.9,
       "reviewsCount": 140,
       "stock": 0,
@@ -187,11 +199,11 @@
       "name": "SonicBlast 360 Waterproof Bluetooth Speaker",
       "slug": "sonicblast-waterproof-speaker",
       "category": "audio",
-      "price": 119.00,
-      "originalPrice": 149.00,
+      "price": 2499.00,
+      "originalPrice": 3299.00,
       "rating": 4.7,
       "reviewsCount": 89,
-      "stock": 12,
+      "stock": 22,
       "badge": "Outdoor Favorite",
       "image": "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=800&auto=format&fit=crop&q=80",
       "gallery": [
@@ -218,23 +230,23 @@
       "id": "ORD-98421",
       "date": "2026-09-18T14:32:00.000Z",
       "status": "Delivered",
-      "total": 319.50,
-      "subtotal": 319.50,
+      "total": 6499.00,
+      "subtotal": 6499.00,
       "shipping": 0.00,
-      "tax": 25.56,
+      "tax": 519.92,
       "shippingAddress": {
         "fullName": "Alex Mercer",
         "address": "742 Evergreen Terrace",
         "city": "Springfield",
         "state": "IL",
         "zip": "62704",
-        "country": "United States"
+        "country": "India"
       },
       "items": [
         {
           "productId": 2,
           "name": "AeroTitan Ultra Smartwatch Series X",
-          "price": 319.50,
+          "price": 6499.00,
           "quantity": 1,
           "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80"
         }
@@ -244,30 +256,30 @@
       "id": "ORD-97510",
       "date": "2026-08-25T10:15:00.000Z",
       "status": "Delivered",
-      "total": 294.99,
-      "subtotal": 249.99,
+      "total": 5998.00,
+      "subtotal": 5998.00,
       "shipping": 0.00,
-      "tax": 20.00,
+      "tax": 479.84,
       "shippingAddress": {
         "fullName": "Alex Mercer",
         "address": "742 Evergreen Terrace",
         "city": "Springfield",
         "state": "IL",
         "zip": "62704",
-        "country": "United States"
+        "country": "India"
       },
       "items": [
         {
           "productId": 1,
           "name": "NovaPulse Wireless Noise-Cancelling Headphones",
-          "price": 249.99,
+          "price": 4999.00,
           "quantity": 1,
           "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80"
         },
         {
           "productId": 6,
           "name": "Zenith Leather Minimalist MagSafe Wallet",
-          "price": 45.00,
+          "price": 999.00,
           "quantity": 1,
           "image": "https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80"
         }
