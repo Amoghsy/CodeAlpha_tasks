@@ -8,17 +8,18 @@ const Profile = {
 
   async init() {
     Auth.requireAuth();
-    await api.ensureMockDataLoaded();
     const urlParams = new URLSearchParams(window.location.search);
     const currentUser = Auth.getUser();
     let targetUsername = urlParams.get('username');
 
     if (!targetUsername) {
-      targetUsername = currentUser ? currentUser.username : 'vibesta_creator';
+      targetUsername = currentUser ? currentUser.username : '';
     }
 
-    this.isOwnProfile = currentUser && (currentUser.username.toLowerCase() === targetUsername.toLowerCase());
-    await this.loadProfile(targetUsername);
+    this.isOwnProfile = currentUser && (currentUser.username.toLowerCase() === (targetUsername || '').toLowerCase());
+    if (targetUsername) {
+      await this.loadProfile(targetUsername);
+    }
   },
 
   async loadProfile(username) {

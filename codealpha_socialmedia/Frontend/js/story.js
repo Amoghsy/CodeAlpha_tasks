@@ -389,7 +389,6 @@ const StoryViewer = {
   },
 
   async open(userId, itemIndex = 0) {
-    await api.ensureMockDataLoaded();
     this.stories = api.getStoredStories();
 
     if (!this.stories || this.stories.length === 0) {

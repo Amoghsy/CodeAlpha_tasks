@@ -5,19 +5,12 @@ class ApiClient {
   constructor() {
     this.baseUrl = CONFIG.API_BASE_URL;
     this.mockDataLoaded = false;
-    if (CONFIG.AUTO_MOCK_FALLBACK) {
-      this.ensureMockDataLoaded();
-    } else {
-      // Clear old offline mock data from localStorage if backend is active
-      localStorage.removeItem(CONFIG.MOCK_USERS_KEY);
-      localStorage.removeItem(CONFIG.MOCK_POSTS_KEY);
-      localStorage.removeItem(CONFIG.MOCK_STORIES_KEY);
-    }
+    // Do NOT load mock data on startup. Requests always hit the live backend first.
   }
 
-  // Fetch mock data from JSON file if not already populated in storage
+  // Fetch mock data from JSON file only when fallback is actually triggered
   async ensureMockDataLoaded() {
-    if (!CONFIG.AUTO_MOCK_FALLBACK) return;
+    if (this.mockDataLoaded) return;
     const hasUsers = !!localStorage.getItem(CONFIG.MOCK_USERS_KEY);
     const hasPosts = !!localStorage.getItem(CONFIG.MOCK_POSTS_KEY);
     const hasStories = !!localStorage.getItem(CONFIG.MOCK_STORIES_KEY);
